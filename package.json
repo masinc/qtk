@@ -1,12 +1,44 @@
 {
   "name": "qtk",
-  "module": "index.ts",
+  "version": "0.1.0",
+  "description": "Local issue / ADR / spec / plan management CLI tool (Bun required)",
   "type": "module",
-  "private": true,
-  "devDependencies": {
-    "@types/bun": "latest"
+  "bin": {
+    "qtk": "./cli.ts"
   },
-  "peerDependencies": {
-    "typescript": "^5"
+  "scripts": {
+    "dev": "bun run cli.ts",
+    "test": "bun test",
+    "build": "bun build cli.ts --outdir dist --target bun"
+  },
+  "keywords": [
+    "issue",
+    "adr",
+    "spec",
+    "plan",
+    "ticket",
+    "cli",
+    "markdown",
+    "bun"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/masinc/qtk.git"
+  },
+  "files": [
+    "cli.ts",
+    "src/",
+    "README.md"
+  ],
+  "dependencies": {
+    "citty": "^0.2.2",
+    "cli-table3": "^0.6.0",
+    "proper-lockfile": "^4.1.2"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/proper-lockfile": "^4.1.4",
+    "typescript": "^5.0.0"
   }
 }
