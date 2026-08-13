@@ -70,6 +70,8 @@ bunx qtk search "認証"
 | `qtk tags [--json]` | 全種別のタグ一覧 |
 | `qtk search "キーワード" [--type 種別] [--status ステータス] [--tag タグ] [--limit n] [--json]` | 横断検索 |
 | `qtk graph [--plan ID] [--cycles] [--format text\|dot\|json]` | 依存グラフ表示・循環依存検出 |
+| `qtk web [--port ポート] [--no-open]` | Web UI / Kanban を起動 (http://127.0.0.1:3000) |
+| `qtk migrate-adr <ソースディレクトリ> [--dry-run]` | Python 製 ADR CLI から移行 |
 
 ## ステータス
 

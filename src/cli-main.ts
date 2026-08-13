@@ -38,6 +38,8 @@ import {
 import { listTags } from "./commands/tags";
 import { search } from "./commands/search";
 import { graph } from "./commands/graph";
+import { startWeb } from "./commands/web";
+import { migrateAdr } from "./commands/migrate-adr";
 
 const issueCmd = defineCommand({
   meta: { name: "issue", description: "チケット管理" },
@@ -545,6 +547,46 @@ const graphCmd = defineCommand({
   },
 });
 
+const webCmd = defineCommand({
+  meta: { name: "web", description: "Web UI / Kanban を起動" },
+  args: {
+    port: { type: "string", description: "ポート番号 (デフォルト 3000)" },
+    "no-open": { type: "boolean", default: false, description: "ブラウザを自動で開かない" },
+    dir: { type: "string", description: "ストアディレクトリ" },
+  },
+  async run({ args }) {
+    await startWeb({
+      port: args.port ? parseInt(args.port, 10) : undefined,
+      noOpen: args["no-open"],
+      dir: args.dir,
+    });
+  },
+});
+
+const migrateAdrCmd = defineCommand({
+  meta: { name: "migrate-adr", description: "Python 製 ADR CLI から移行" },
+  args: {
+    source: { type: "positional", description: "ソースディレクトリ (docs/adr)", required: true },
+    "dry-run": { type: "boolean", default: false, description: "ドライラン (変換のみ確認)" },
+    dir: { type: "string", description: "ストアディレクトリ" },
+  },
+  async run({ args }) {
+    const ctx = await resolveContext(args.dir);
+    const result = await migrateAdr(ctx.config, {
+      sourceDir: args.source,
+      storeDir: ctx.storeDir,
+      dryRun: args["dry-run"],
+    });
+    console.log(`\n移行完了: ${result.migrated} 件, スキップ: ${result.skipped} 件`);
+    if (result.errors.length > 0) {
+      for (const e of result.errors) {
+        console.error(`エラー: ${e.file}: ${e.message}`);
+      }
+      process.exitCode = 1;
+    }
+  },
+});
+
 export const main = defineCommand({
   meta: {
     name: "qtk",
@@ -560,6 +602,8 @@ export const main = defineCommand({
     tags: tagsCmd,
     search: searchCmd,
     graph: graphCmd,
+    web: webCmd,
+    "migrate-adr": migrateAdrCmd,
   },
 });
 

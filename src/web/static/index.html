@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>qtk Kanban</title>
+  <style>
+    :root {
+      --bg: #f5f5f5;
+      --panel: #ffffff;
+      --border: #e0e0e0;
+      --text: #333333;
+      --muted: #888888;
+      --accent: #4f46e5;
+      --new: #e3f2fd;
+      --in-progress: #fff3e0;
+      --paused: #fce4ec;
+      --done: #e8f5e9;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    header {
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    header h1 { font-size: 1.2rem; }
+    .btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    .btn:hover { opacity: 0.9; }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      padding: 24px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .column {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      min-height: 300px;
+      display: flex;
+      flex-direction: column;
+    }
+    .column-header {
+      padding: 10px 14px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      border-bottom: 1px solid var(--border);
+      border-radius: 8px 8px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .column-header.new { background: var(--new); }
+    .column-header.in-progress { background: var(--in-progress); }
+    .column-header.paused { background: var(--paused); }
+    .column-header.done { background: var(--done); }
+    .count { font-size: 0.75rem; color: var(--muted); }
+    .cards { padding: 10px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 12px;
+      cursor: grab;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    .card:hover { box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    .card.dragging { opacity: 0.5; }
+    .card-id { font-size: 0.7rem; color: var(--muted); font-weight: 600; }
+    .card-title { font-size: 0.85rem; margin: 4px 0; }
+    .card-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+    .tag {
+      background: #eef2ff;
+      color: var(--accent);
+      font-size: 0.65rem;
+      padding: 1px 6px;
+      border-radius: 10px;
+    }
+    .card-claim { font-size: 0.7rem; color: var(--muted); margin-top: 4px; }
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--panel);
+      border-radius: 8px;
+      padding: 24px;
+      width: 480px;
+      max-width: 90vw;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .modal h2 { font-size: 1rem; margin-bottom: 16px; }
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 0.8rem; margin-bottom: 4px; color: var(--muted); }
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-family: inherit;
+    }
+    .form-group textarea { min-height: 80px; resize: vertical; }
+    .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+    .btn-secondary { background: var(--muted); }
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #333;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      display: none;
+      z-index: 200;
+    }
+    .toast.show { display: block; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>qtk Kanban</h1>
+    <button class="btn" onclick="openCreateModal()">+ 新規チケット</button>
+  </header>
+
+  <div class="board" id="board"></div>
+
+  <!-- 作成モーダル -->
+  <div class="modal-overlay" id="create-modal">
+    <div class="modal">
+      <h2>新規チケット作成</h2>
+      <div class="form-group">
+        <label>タイトル</label>
+        <input type="text" id="create-title" placeholder="チケットのタイトル">
+      </div>
+      <div class="form-group">
+        <label>説明</label>
+        <textarea id="create-desc" placeholder="チケットの説明"></textarea>
+      </div>
+      <div class="form-group">
+        <label>タグ (カンマ区切り)</label>
+        <input type="text" id="create-tags" placeholder="backend, auth">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeCreateModal()">キャンセル</button>
+        <button class="btn" onclick="submitCreate()">作成</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 詳細モーダル -->
+  <div class="modal-overlay" id="detail-modal">
+    <div class="modal">
+      <h2 id="detail-title"></h2>
+      <div class="form-group">
+        <label>ステータス</label>
+        <select id="detail-status">
+          <option value="new">new</option>
+          <option value="in-progress">in-progress</option>
+          <option value="paused">paused</option>
+          <option value="done">done</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>説明</label>
+        <textarea id="detail-desc"></textarea>
+      </div>
+      <div class="form-group">
+        <label>コメント追加</label>
+        <textarea id="detail-comment" placeholder="コメントを入力"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeDetailModal()">閉じる</button>
+        <button class="btn" onclick="submitEdit()">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const COLUMNS = ["new", "in-progress", "paused", "done"];
+    const COLUMN_LABELS = {
+      "new": "New",
+      "in-progress": "In Progress",
+      "paused": "Paused",
+      "done": "Done",
+    };
+    let issues = [];
+    let currentDetailId = null;
+
+    async function api(path, options = {}) {
+      const res = await fetch(path, {
+        headers: { "Content-Type": "application/json" },
+        ...options,
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || `HTTP ${res.status}`);
+      }
+      return res.json();
+    }
+
+    async function loadIssues() {
+      const data = await api("/api/issues");
+      issues = data.issues;
+      renderBoard();
+    }
+
+    function renderBoard() {
+      const board = document.getElementById("board");
+      board.innerHTML = "";
+      for (const col of COLUMNS) {
+        const colIssues = issues.filter((i) => i.status === col);
+        const column = document.createElement("div");
+        column.className = "column";
+        column.dataset.status = col;
+        column.innerHTML = `
+          <div class="column-header ${col}">
+            <span>${COLUMN_LABELS[col]}</span>
+            <span class="count">${colIssues.length}</span>
+          </div>
+          <div class="cards" data-status="${col}"></div>
+        `;
+        const cards = column.querySelector(".cards");
+        for (const issue of colIssues) {
+          cards.appendChild(renderCard(issue));
+        }
+        board.appendChild(column);
+      }
+      setupDragAndDrop();
+    }
+
+    function renderCard(issue) {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.draggable = true;
+      card.dataset.id = issue.id;
+      const tags = (issue.tags || []).map((t) => `<span class="tag">${escapeHtml(t)}</span>`).join("");
+      const claim = issue.claimed_by ? `<div class="card-claim">👤 ${escapeHtml(issue.claimed_by)}</div>` : "";
+      card.innerHTML = `
+        <div class="card-id">${issue.idLabel}</div>
+        <div class="card-title">${escapeHtml(issue.title)}</div>
+        <div class="card-tags">${tags}</div>
+        ${claim}
+      `;
+      card.addEventListener("click", () => openDetailModal(issue.id));
+      return card;
+    }
+
+    function setupDragAndDrop() {
+      document.querySelectorAll(".card").forEach((card) => {
+        card.addEventListener("dragstart", (e) => {
+          card.classList.add("dragging");
+          e.dataTransfer.setData("text/plain", card.dataset.id);
+        });
+        card.addEventListener("dragend", () => card.classList.remove("dragging"));
+      });
+      document.querySelectorAll(".cards").forEach((dropZone) => {
+        dropZone.addEventListener("dragover", (e) => e.preventDefault());
+        dropZone.addEventListener("drop", async (e) => {
+          e.preventDefault();
+          const id = e.dataTransfer.getData("text/plain");
+          const status = dropZone.dataset.status;
+          if (!id || !status) return;
+          try {
+            await api(`/api/issues/${id}/edit`, {
+              method: "POST",
+              body: JSON.stringify({ status }),
+            });
+            showToast(`#${String(id).padStart(4, "0")} を ${status} に移動`);
+            await loadIssues();
+          } catch (err) {
+            showToast(err.message, true);
+          }
+        });
+      });
+    }
+
+    function openCreateModal() {
+      document.getElementById("create-modal").classList.add("open");
+      document.getElementById("create-title").focus();
+    }
+    function closeCreateModal() {
+      document.getElementById("create-modal").classList.remove("open");
+    }
+    async function submitCreate() {
+      const title = document.getElementById("create-title").value.trim();
+      if (!title) { showToast("タイトルは必須です", true); return; }
+      const desc = document.getElementById("create-desc").value.trim();
+      const tags = document.getElementById("create-tags").value.split(",").map((t) => t.trim()).filter(Boolean);
+      try {
+        await api("/api/issues", {
+          method: "POST",
+          body: JSON.stringify({ title, description: desc, tags }),
+        });
+        closeCreateModal();
+        document.getElementById("create-title").value = "";
+        document.getElementById("create-desc").value = "";
+        document.getElementById("create-tags").value = "";
+        showToast("チケットを作成しました");
+        await loadIssues();
+      } catch (err) {
+        showToast(err.message, true);
+      }
+    }
+
+    function openDetailModal(id) {
+      const issue = issues.find((i) => i.id === id);
+      if (!issue) return;
+      currentDetailId = id;
+      document.getElementById("detail-title").textContent = `${issue.idLabel} ${issue.title}`;
+      document.getElementById("detail-status").value = issue.status;
+      document.getElementById("detail-desc").value = issue.description || "";
+      document.getElementById("detail-comment").value = "";
+      document.getElementById("detail-modal").classList.add("open");
+    }
+    function closeDetailModal() {
+      document.getElementById("detail-modal").classList.remove("open");
+      currentDetailId = null;
+    }
+    async function submitEdit() {
+      if (currentDetailId === null) return;
+      const status = document.getElementById("detail-status").value;
+      const desc = document.getElementById("detail-desc").value;
+      const comment = document.getElementById("detail-comment").value.trim();
+      try {
+        await api(`/api/issues/${currentDetailId}/edit`, {
+          method: "POST",
+          body: JSON.stringify({ status, description: desc, comment: comment || undefined }),
+        });
+        closeDetailModal();
+        showToast("保存しました");
+        await loadIssues();
+      } catch (err) {
+        showToast(err.message, true);
+      }
+    }
+
+    function showToast(message, isError = false) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.style.background = isError ? "#dc2626" : "#333";
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2500);
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, (c) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+      }[c]));
+    }
+
+    loadIssues().catch((err) => showToast(err.message, true));
+  </script>
+</body>
+</html>
