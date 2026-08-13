@@ -8,6 +8,7 @@ import {
   showIssue,
   editIssue,
   archiveIssue,
+  claimIssue,
   parseIssueId,
 } from "./commands/issue";
 import {
@@ -36,6 +37,7 @@ import {
 } from "./commands/plan";
 import { listTags } from "./commands/tags";
 import { search } from "./commands/search";
+import { graph } from "./commands/graph";
 
 const issueCmd = defineCommand({
   meta: { name: "issue", description: "チケット管理" },
@@ -74,6 +76,7 @@ const issueCmd = defineCommand({
         tag: { type: "string", description: "タグでフィルタ" },
         ready: { type: "boolean", default: false, description: "実行可能なチケットのみ" },
         blocked: { type: "boolean", default: false, description: "ブロック中のチケットのみ" },
+        stale: { type: "boolean", default: false, description: "lease 期限切れのクレームのみ" },
         search: { type: "string", description: "キーワード検索" },
         limit: { type: "string", description: "件数制限" },
         json: { type: "boolean", default: false, description: "JSON 出力" },
@@ -87,6 +90,7 @@ const issueCmd = defineCommand({
           tag: args.tag,
           ready: args.ready,
           blocked: args.blocked,
+          stale: args.stale,
           keyword: args.search,
           limit: args.limit ? parseInt(args.limit, 10) : undefined,
           json: args.json,
@@ -162,6 +166,21 @@ const issueCmd = defineCommand({
         if (id === null) throw new Error(`不正な ID: ${args.id}`);
         await archiveIssue(ctx.storeDir, ctx.config, id);
         console.log(`アーカイブしました: #${String(id).padStart(ctx.config.idDigits, "0")}`);
+      },
+    }),
+    claim: defineCommand({
+      meta: { name: "claim", description: "チケットをクレーム (原子的)" },
+      args: {
+        id: { type: "positional", description: "チケットID", required: true },
+        as: { type: "string", description: "クレーム者名" },
+        dir: { type: "string", description: "ストアディレクトリ" },
+      },
+      async run({ args }) {
+        const ctx = await resolveContext(args.dir);
+        const id = parseIssueId(args.id);
+        if (id === null) throw new Error(`不正な ID: ${args.id}`);
+        await claimIssue(ctx.storeDir, ctx.config, id, { as: args.as });
+        console.log(`クレームしました: #${String(id).padStart(ctx.config.idDigits, "0")}`);
       },
     }),
   },
@@ -508,6 +527,24 @@ const initCmd = defineCommand({
   },
 });
 
+const graphCmd = defineCommand({
+  meta: { name: "graph", description: "依存グラフ表示" },
+  args: {
+    plan: { type: "string", description: "plan ID でフィルタ" },
+    cycles: { type: "boolean", default: false, description: "循環依存を検出" },
+    format: { type: "string", description: "出力形式 (text/dot/json)" },
+    dir: { type: "string", description: "ストアディレクトリ" },
+  },
+  async run({ args }) {
+    const ctx = await resolveContext(args.dir);
+    await graph(ctx.storeDir, ctx.config, {
+      planId: args.plan ? parsePlanId(args.plan) ?? undefined : undefined,
+      cycles: args.cycles,
+      format: (args.format as "text" | "dot" | "json" | undefined) ?? "text",
+    });
+  },
+});
+
 export const main = defineCommand({
   meta: {
     name: "qtk",
@@ -522,6 +559,7 @@ export const main = defineCommand({
     plan: planCmd,
     tags: tagsCmd,
     search: searchCmd,
+    graph: graphCmd,
   },
 });
 

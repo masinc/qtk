@@ -19,6 +19,7 @@ const config: Config = {
   statuses: ["new", "in-progress", "paused", "done"],
   adrStatuses: ["proposed", "accepted", "deprecated", "superseded"],
   planStatuses: ["drafting", "ready", "in-progress", "completed", "superseded", "abandoned"],
+  claimLeaseMinutes: 30,
 };
 
 test("nextId: 連番で採番される", async () => {

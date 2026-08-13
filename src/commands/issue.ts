@@ -9,6 +9,7 @@ import { filterRecords } from "../query/filter";
 import { getReadyIssues, getBlockedIssues } from "../query/dependencies";
 import { outputJson } from "../output/json";
 import { renderTable } from "../output/table";
+import { withFileLock } from "../store/lock";
 import { nowIso } from "./context";
 import type { Config } from "../models/types";
 
@@ -98,6 +99,7 @@ export interface ListIssueOptions {
   tag?: string;
   ready?: boolean;
   blocked?: boolean;
+  stale?: boolean;
   keyword?: string;
   limit?: number;
   json?: boolean;
@@ -113,6 +115,7 @@ export async function listIssues(
 
   if (options.ready) records = getReadyIssues(records);
   if (options.blocked) records = getBlockedIssues(records);
+  if (options.stale) records = records.filter(isStaleClaim);
 
   records = filterRecords(records, {
     status: options.status,
@@ -244,6 +247,54 @@ export async function archiveIssue(
   const found = await findIssue(storeDir, id);
   if (!found) throw new Error(`issue #${String(id).padStart(config.idDigits, "0")} が見つかりません`);
   archiveRecord(storeDir, "issue", id, found.slug);
+}
+
+export interface ClaimOptions {
+  as?: string;
+}
+
+export async function claimIssue(
+  storeDir: string,
+  config: Config,
+  id: number,
+  options: ClaimOptions = {},
+): Promise<void> {
+  const lockPath = join(storeDir, ".qtk", "claim.lock");
+  await withFileLock(lockPath, async () => {
+    const found = await findIssue(storeDir, id);
+    if (!found) throw new Error(`issue #${String(id).padStart(config.idDigits, "0")} が見つかりません`);
+
+    const fm = found.record.frontmatter;
+    const claimedBy = fm.claimed_by as string | null | undefined;
+    const leaseExpiresAt = fm.lease_expires_at as string | null | undefined;
+
+    // 既存クレームが lease 有効ならエラー
+    if (claimedBy && leaseExpiresAt && new Date(leaseExpiresAt) > new Date()) {
+      throw new Error(
+        `issue #${String(id).padStart(config.idDigits, "0")} は ${claimedBy} がクレーム中です (lease: ${leaseExpiresAt})`,
+      );
+    }
+
+    const leaseMinutes = config.claimLeaseMinutes ?? 30;
+    const leaseExpires = new Date(Date.now() + leaseMinutes * 60 * 1000).toISOString();
+    const claimer = options.as ?? "unknown";
+
+    const updated = updateFrontmatter(found.record, {
+      claimed_by: claimer,
+      claimed_at: nowIso(),
+      lease_expires_at: leaseExpires,
+      status: "in-progress",
+      updated_at: nowIso(),
+    });
+    await writeRecord(storeDir, "issue", id, found.slug, updated);
+  });
+}
+
+export function isStaleClaim(record: ParsedRecord): boolean {
+  const claimedBy = record.frontmatter.claimed_by as string | null | undefined;
+  const leaseExpiresAt = record.frontmatter.lease_expires_at as string | null | undefined;
+  if (!claimedBy || !leaseExpiresAt) return false;
+  return new Date(leaseExpiresAt) <= new Date();
 }
 
 export function parseIssueId(input: string): number | null {

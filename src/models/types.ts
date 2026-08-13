@@ -76,5 +76,6 @@ export interface Config {
   statuses: string[];
   adrStatuses: string[];
   planStatuses: string[];
+  claimLeaseMinutes: number;
   [key: string]: unknown;
 }

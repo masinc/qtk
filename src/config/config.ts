@@ -11,6 +11,7 @@ export const DEFAULT_CONFIG: Config = {
   statuses: ["new", "in-progress", "paused", "done"],
   adrStatuses: ["proposed", "accepted", "deprecated", "superseded"],
   planStatuses: ["drafting", "ready", "in-progress", "completed", "superseded", "abandoned"],
+  claimLeaseMinutes: 30,
 };
 
 export function configPath(storeDir: string): string {

@@ -51,6 +51,7 @@ bunx qtk search "認証"
 | `qtk issue show <ID> [--json]` | チケット詳細 |
 | `qtk issue edit <ID> [-d 説明] [--ac 基準] [--plan 計画] [--comment 本文] [--tag タグ] [--add-tag タグ] [--remove-tag タグ] [--clear-tags] [--assignee 名前] [--dep 依存ID] [--status ステータス] [--final-summary サマリー]` | チケット編集 |
 | `qtk issue archive <ID>` | チケットをアーカイブ |
+| `qtk issue claim <ID> [--as 名前]` | チケットをクレーム (原子的、lease 付き) |
 | `qtk adr new "タイトル" [-d 要約] [--tag タグ] [--status ステータス] [--supersedes 旧ADR ID]` | ADR 作成 |
 | `qtk adr list [--tag タグ] [--status ステータス] [--json]` | ADR 一覧 |
 | `qtk adr show <ID> [--json]` | ADR 詳細 |
@@ -68,6 +69,7 @@ bunx qtk search "認証"
 | `qtk plan archive <ID>` | 計画をアーカイブ |
 | `qtk tags [--json]` | 全種別のタグ一覧 |
 | `qtk search "キーワード" [--type 種別] [--status ステータス] [--tag タグ] [--limit n] [--json]` | 横断検索 |
+| `qtk graph [--plan ID] [--cycles] [--format text\|dot\|json]` | 依存グラフ表示・循環依存検出 |
 
 ## ステータス
 
@@ -117,6 +119,7 @@ planStatuses:                   # plan のステータス定義
   - completed
   - superseded
   - abandoned
+claimLeaseMinutes: 30           # claim の lease 期限 (分)
 ```
 
 ## Windows / PowerShell での注意
