@@ -10,11 +10,11 @@ disable-model-invocation: true
 
 qtk CLI の場合、以下のワークフローでチケットを取得・クレーム・完了する:
 
-1. **フロンティアを取得する**: `bunx qtk issue list --ready` — 全依存が完了し、未クレームのチケット一覧
-2. **チケット詳細を読む**: `bunx qtk issue show <ID> --json` — チケットの本文・コメント・受け入れ基準を取得
-3. **クレームする**: `bunx qtk issue claim <ID> --as "<名前>"` — 原子的クレーム (他セッションと衝突しない)
+1. **フロンティアを取得する**: `bunx @masinc/qtk issue list --ready` — 全依存が完了し、未クレームのチケット一覧
+2. **チケット詳細を読む**: `bunx @masinc/qtk issue show <ID> --json` — チケットの本文・コメント・受け入れ基準を取得
+3. **クレームする**: `bunx @masinc/qtk issue claim <ID> --as "<名前>"` — 原子的クレーム (他セッションと衝突しない)
 4. **実装する**: 以下のプロセスに従う
-5. **完了する**: `bunx qtk issue edit <ID> --status done` — チケットを完了
+5. **完了する**: `bunx @masinc/qtk issue edit <ID> --status done` — チケットを完了
 
 本物のイシュートラッカー (GitHub / GitLab) の場合は、トラッカーのネイティブ機能でチケットを取得・クレーム・完了する。ローカル Markdown (`.scratch/`) の場合は、ファイルを直接読み書きする。
 

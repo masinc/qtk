@@ -5,7 +5,7 @@
 ## 初期化
 
 ```bash
-bunx qtk init
+bunx @masinc/qtk init
 ```
 
 `qtk/` ディレクトリと `config.yml` が作成されます。`config.yml` で採番桁数・ID プレフィックス・autoCommit などを設定できます。
@@ -27,25 +27,25 @@ bunx qtk init
 チケットを作成します:
 
 ```bash
-bunx qtk issue create "タイトル" -d "説明" --tag backend --dep 0002
+bunx @masinc/qtk issue create "タイトル" -d "説明" --tag backend --dep 0002
 ```
 
 仕様を作成します:
 
 ```bash
-bunx qtk spec create "タイトル" -d "説明"
+bunx @masinc/qtk spec create "タイトル" -d "説明"
 ```
 
 ## スキルが「関連チケットを取得する」と言ったとき
 
 ```bash
-bunx qtk issue show 0001 --json
+bunx @masinc/qtk issue show 0001 --json
 ```
 
 ## スキルが「実行可能なチケット (フロンティア) を取得する」と言ったとき
 
 ```bash
-bunx qtk issue list --ready
+bunx @masinc/qtk issue list --ready
 ```
 
 全依存が完了し、まだクレームされていないチケットが一覧表示されます。
@@ -53,7 +53,7 @@ bunx qtk issue list --ready
 ## スキルが「チケットをクレームする」と言ったとき
 
 ```bash
-bunx qtk issue claim 0001 --as "@agent-name"
+bunx @masinc/qtk issue claim 0001 --as "@agent-name"
 ```
 
 原子的なクレーム (ファイルロック付き)。他のセッションと衝突しません。
@@ -61,26 +61,26 @@ bunx qtk issue claim 0001 --as "@agent-name"
 ## スキルが「チケットを完了する」と言ったとき
 
 ```bash
-bunx qtk issue edit 0001 --status done
+bunx @masinc/qtk issue edit 0001 --status done
 ```
 
 ## スキルが「コメントを追加する」と言ったとき
 
 ```bash
-bunx qtk issue edit 0001 --comment "コメント本文" 
+bunx @masinc/qtk issue edit 0001 --comment "コメント本文" 
 ```
 
 ## スキルが「タグを追加・削除する」と言ったとき
 
 ```bash
-bunx qtk issue edit 0001 --add-tag ready-for-agent
-bunx qtk issue edit 0001 --remove-tag needs-triage
+bunx @masinc/qtk issue edit 0001 --add-tag ready-for-agent
+bunx @masinc/qtk issue edit 0001 --remove-tag needs-triage
 ```
 
 ## スキルが「依存関係を設定する」と言ったとき
 
 ```bash
-bunx qtk issue edit 0001 --dep 0002
+bunx @masinc/qtk issue edit 0001 --dep 0002
 ```
 
 `dependencies` 配列に追加されます。`qtk issue list --ready` で全依存完了のチケットを取得できます。

@@ -1,15 +1,16 @@
 {
-  "name": "qtk",
+  "name": "@masinc/qtk",
   "version": "0.1.0",
   "description": "Local issue / ADR / spec / plan management CLI tool (Bun required)",
   "type": "module",
   "bin": {
-    "qtk": "./cli.ts"
+    "qtk": "dist/cli.js"
   },
   "scripts": {
     "dev": "bun run cli.ts",
     "test": "bun test",
-    "build": "bun build cli.ts --outdir dist --target bun"
+    "build": "bun build cli.ts --outdir dist --target bun",
+    "prepublishOnly": "bun run build"
   },
   "keywords": [
     "issue",
@@ -27,7 +28,7 @@
     "url": "git+https://github.com/masinc/qtk.git"
   },
   "files": [
-    "cli.ts",
+    "dist/",
     "src/",
     "README.md"
   ],

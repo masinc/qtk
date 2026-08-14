@@ -57,9 +57,9 @@ PR の場合、同じ状態が添付されたコードに対して解釈され�
 
 イシュートラッカーにクエリし、古い順に 3 つのバケットを提示します。qtk CLI の場合は以下のコマンドでクエリします:
 
-1. **ラベルなし** — 一度もトリアージされていない。`bunx qtk issue list` でタグなしのイシューを確認します。
-2. **`needs-triage`** — 評価が進行中。`bunx qtk issue list --tag needs-triage` で取得します。
-3. **前回のトリアージノート以降に報告者の活動がある `needs-info`** — 再評価が必要。`bunx qtk issue list --tag needs-info` で取得し、コメント履歴を確認します。
+1. **ラベルなし** — 一度もトリアージされていない。`bunx @masinc/qtk issue list` でタグなしのイシューを確認します。
+2. **`needs-triage`** — 評価が進行中。`bunx @masinc/qtk issue list --tag needs-triage` で取得します。
+3. **前回のトリアージノート以降に報告者の活動がある `needs-info`** — 再評価が必要。`bunx @masinc/qtk issue list --tag needs-info` で取得し、コメント履歴を確認します。
 
 本物のイシュートラッカー (GitHub / GitLab) の場合は、トラッカーのネイティブクエリ機能を使用します。
 
@@ -78,18 +78,18 @@ PR が対象の場合は、外部 PR をこれらのバケットに含め、各�
 4. **グリリングする (必要な場合)。** リクエストに肉付けが必要な場合は、`/grilling` と `/domain-modeling` スキルを一緒に実行します — 一度に 1 ラウンドの質問で形を整え、ドメイン用語を研ぎ澄まし、決定が下されるたびに `CONTEXT.md`/ADR をインラインで更新します。
 
 5. **結果を適用する:**
-   - `ready-for-agent` — エージェントブリーフのコメントを投稿します ([AGENT-BRIEF.md](AGENT-BRIEF.md))。qtk CLI の場合: `bunx qtk issue edit <ID> --add-tag ready-for-agent --comment "エージェントブリーフ"`
-   - `ready-for-human` — エージェントブリーフと同じ構造ですが、委任できない理由 (判断が必要、外部アクセス、設計上の決定、手動テスト) を記します。qtk CLI の場合: `bunx qtk issue edit <ID> --add-tag ready-for-human --comment "ブリーフ"`
-   - `needs-info` — トリアージノートを投稿します (以下のテンプレート)。qtk CLI の場合: `bunx qtk issue edit <ID> --add-tag needs-info --comment "トリアージノート"`
-   - `wontfix` — クローズし、コメントは*理由*によって異なります。qtk CLI の場合: `bunx qtk issue edit <ID> --add-tag wontfix --status done`:
+   - `ready-for-agent` — エージェントブリーフのコメントを投稿します ([AGENT-BRIEF.md](AGENT-BRIEF.md))。qtk CLI の場合: `bunx @masinc/qtk issue edit <ID> --add-tag ready-for-agent --comment "エージェントブリーフ"`
+   - `ready-for-human` — エージェントブリーフと同じ構造ですが、委任できない理由 (判断が必要、外部アクセス、設計上の決定、手動テスト) を記します。qtk CLI の場合: `bunx @masinc/qtk issue edit <ID> --add-tag ready-for-human --comment "ブリーフ"`
+   - `needs-info` — トリアージノートを投稿します (以下のテンプレート)。qtk CLI の場合: `bunx @masinc/qtk issue edit <ID> --add-tag needs-info --comment "トリアージノート"`
+   - `wontfix` — クローズし、コメントは*理由*によって異なります。qtk CLI の場合: `bunx @masinc/qtk issue edit <ID> --add-tag wontfix --status done`:
      - **すでに実装済み** — 変更はコードベースにすでに存在します。どこにあるかを指し示します。`.out-of-scope/` には**書きません** (そのナレッジベースは*拒否された*リクエスト用であり、実装済みのもの用ではありません)。
      - **拒否 (バグ)** — 丁寧な説明をしてからクローズします。
      - **拒否 (拡張機能)** — `.out-of-scope/` に書き、コメントからリンクし、クローズします ([OUT-OF-SCOPE.md](OUT-OF-SCOPE.md))。
-   - `needs-triage` — ロールを適用します。部分的な進捗がある場合は任意のコメント。qtk CLI の場合: `bunx qtk issue edit <ID> --add-tag needs-triage`
+   - `needs-triage` — ロールを適用します。部分的な進捗がある場合は任意のコメント。qtk CLI の場合: `bunx @masinc/qtk issue edit <ID> --add-tag needs-triage`
 
 ## クイックな状態オーバーライド
 
-メンテナが「#42 を ready-for-agent に移動して」と言った場合は、彼らを信頼してロールを直接適用します。実行しようとしていること (ロール変更、コメント、クローズ) を確認してから行動します。グリリングはスキップします。グリリングセッションなしで `ready-for-agent` に移動する場合は、エージェントブリーフを書くかどうかを尋ねます。qtk CLI の場合: `bunx qtk issue edit 0042 --add-tag ready-for-agent`
+メンテナが「#42 を ready-for-agent に移動して」と言った場合は、彼らを信頼してロールを直接適用します。実行しようとしていること (ロール変更、コメント、クローズ) を確認してから行動します。グリリングはスキップします。グリリングセッションなしで `ready-for-agent` に移動する場合は、エージェントブリーフを書くかどうかを尋ねます。qtk CLI の場合: `bunx @masinc/qtk issue edit 0042 --add-tag ready-for-agent`
 
 ## Needs-info テンプレート
 

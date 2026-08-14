@@ -4,41 +4,41 @@
 
 Markdown ファイル (YAML frontmatter 付き) をストアとして、チケット・アーキテクチャ決定記録・仕様・計画を単一ツールで管理します。git でバージョン管理可能です。
 
-> **注意**: qtk は **Bun ランタイム必須** です。`bunx qtk` で実行してください。`npx` では動作しません。
+> **注意**: qtk は **Bun ランタイム必須** です。`bunx @masinc/qtk` で実行してください。`npx` では動作しません。
 
 ## インストール
 
 ```bash
 # bun が必要です (https://bun.sh)
-bunx qtk --help
+bunx @masinc/qtk --help
 ```
 
 ## クイックスタート
 
 ```bash
 # ストア初期化 (qtk/ ディレクトリと config.yml を作成)
-bunx qtk init
+bunx @masinc/qtk init
 
 # チケット作成
-bunx qtk issue create "認証機能を追加" -d "ユーザー認証を実装" --tag backend --ac "ログイン画面がある"
+bunx @masinc/qtk issue create "認証機能を追加" -d "ユーザー認証を実装" --tag backend --ac "ログイン画面がある"
 
 # チケット一覧
-bunx qtk issue list
+bunx @masinc/qtk issue list
 
 # チケット詳細
-bunx qtk issue show 1
+bunx @masinc/qtk issue show 1
 
 # チケット編集 (ステータス・タグ・コメント)
-bunx qtk issue edit 1 --status in-progress --add-tag auth --comment "実装開始"
+bunx @masinc/qtk issue edit 1 --status in-progress --add-tag auth --comment "実装開始"
 
 # ADR 作成
-bunx qtk adr new "データベース選定" -d "DB を選定する" --tag architecture
+bunx @masinc/qtk adr new "データベース選定" -d "DB を選定する" --tag architecture
 
 # 計画作成 (AI Agent の plan 履歴管理)
-bunx qtk plan create "qtk ツール構築" --generated-by claude
+bunx @masinc/qtk plan create "qtk ツール構築" --generated-by claude
 
 # 横断検索
-bunx qtk search "認証"
+bunx @masinc/qtk search "認証"
 ```
 
 ## コマンド一覧
