@@ -140,6 +140,21 @@ bun test           # テスト実行
 bun run cli.ts     # 開発実行
 ```
 
+## スキル統合
+
+`skills/` ディレクトリに、Matt Pocock のエンジニアリングスキル群の qtk CLI 統合版が配置されています。既存スキルの「ローカル Markdown」選択肢 (`.scratch/` 規約) を qtk CLI 呼び出しに差し替えた版です。GitHub / GitLab 選択肢は維持されています。
+
+| スキル | 説明 |
+|---|---|
+| `setup-matt-pocock-skills` | リポジトリのセットアップ (イシュートラッカー・トリアージラベル・ドメイン文書)。qtk CLI を選択肢に追加 |
+| `to-tickets` | 計画・仕様をトレーサーバレットチケットに分解。`qtk issue create` + `--dep` で構造化依存 |
+| `to-spec` | 会話を仕様に変換。`qtk spec create` + `qtk spec update` で管理 |
+| `triage` | イシューをトリアージロールで状態管理。`qtk issue edit --add-tag` / `--comment` / `--status` で操作 |
+| `wayfinder` | 大規模作業を共有マップとして計画。`qtk plan create` (マップ) + `qtk issue list --ready` (フロンティア) + `qtk issue claim` (クレーム) |
+| `implement` | 仕様・チケットに基づいて実装。`qtk issue list --ready` → `show --json` → `claim` → `edit --status done` のワークフロー |
+
+スキルを使用するには、`skills/` ディレクトリのパスをスキル検索パスに追加してください (opencode の設定で対応)。
+
 ## ライセンス
 
 MIT
