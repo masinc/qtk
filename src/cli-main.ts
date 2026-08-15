@@ -39,13 +39,12 @@ import { listTags } from "./commands/tags";
 import { search } from "./commands/search";
 import { graph } from "./commands/graph";
 import { startWeb } from "./commands/web";
-import { migrateAdr } from "./commands/migrate-adr";
 
 const issueCmd = defineCommand({
-  meta: { name: "issue", description: "チケット管理" },
+  meta: { name: "issue", description: "チケット管理", alias: "is" },
   subCommands: {
-    create: defineCommand({
-      meta: { name: "create", description: "チケットを作成" },
+    new: defineCommand({
+      meta: { name: "new", description: "チケットを作成", alias: "create" },
       args: {
         title: { type: "positional", description: "タイトル", required: true },
         description: { alias: "d", type: "string", description: "説明" },
@@ -71,7 +70,7 @@ const issueCmd = defineCommand({
       },
     }),
     list: defineCommand({
-      meta: { name: "list", description: "チケット一覧" },
+      meta: { name: "list", description: "チケット一覧", alias: "ls" },
       args: {
         status: { alias: "s", type: "string", description: "ステータスでフィルタ" },
         assignee: { alias: "a", type: "string", description: "担当者でフィルタ" },
@@ -192,7 +191,7 @@ const adrCmd = defineCommand({
   meta: { name: "adr", description: "ADR 管理" },
   subCommands: {
     new: defineCommand({
-      meta: { name: "new", description: "ADR を作成" },
+      meta: { name: "new", description: "ADR を作成", alias: "create" },
       args: {
         title: { type: "positional", description: "タイトル", required: true },
         description: { alias: "d", type: "string", description: "要約" },
@@ -214,7 +213,7 @@ const adrCmd = defineCommand({
       },
     }),
     list: defineCommand({
-      meta: { name: "list", description: "ADR 一覧" },
+      meta: { name: "list", description: "ADR 一覧", alias: "ls" },
       args: {
         tag: { type: "string", description: "タグでフィルタ" },
         status: { type: "string", description: "ステータスでフィルタ" },
@@ -308,10 +307,10 @@ const adrCmd = defineCommand({
 });
 
 const specCmd = defineCommand({
-  meta: { name: "spec", description: "仕様管理" },
+  meta: { name: "spec", description: "仕様管理", alias: "sp" },
   subCommands: {
-    create: defineCommand({
-      meta: { name: "create", description: "仕様を作成" },
+    new: defineCommand({
+      meta: { name: "new", description: "仕様を作成", alias: "create" },
       args: {
         title: { type: "positional", description: "タイトル", required: true },
         type: { type: "string", description: "種別 (specification/readme/guide/other)" },
@@ -329,7 +328,7 @@ const specCmd = defineCommand({
       },
     }),
     list: defineCommand({
-      meta: { name: "list", description: "仕様一覧" },
+      meta: { name: "list", description: "仕様一覧", alias: "ls" },
       args: {
         type: { type: "string", description: "種別でフィルタ" },
         json: { type: "boolean", default: false, description: "JSON 出力" },
@@ -358,7 +357,7 @@ const specCmd = defineCommand({
       },
     }),
     update: defineCommand({
-      meta: { name: "update", description: "仕様の本文を更新" },
+      meta: { name: "update", description: "仕様の本文を更新", alias: "up" },
       args: {
         id: { type: "positional", description: "仕様 ID", required: true },
         content: { type: "string", description: "本文" },
@@ -380,10 +379,10 @@ const specCmd = defineCommand({
 });
 
 const planCmd = defineCommand({
-  meta: { name: "plan", description: "計画管理" },
+  meta: { name: "plan", description: "計画管理", alias: "pl" },
   subCommands: {
-    create: defineCommand({
-      meta: { name: "create", description: "計画を作成" },
+    new: defineCommand({
+      meta: { name: "new", description: "計画を作成", alias: "create" },
       args: {
         title: { type: "positional", description: "タイトル", required: true },
         description: { alias: "d", type: "string", description: "要約" },
@@ -407,7 +406,7 @@ const planCmd = defineCommand({
       },
     }),
     list: defineCommand({
-      meta: { name: "list", description: "計画一覧" },
+      meta: { name: "list", description: "計画一覧", alias: "ls" },
       args: {
         status: { type: "string", description: "ステータスでフィルタ" },
         "related-issue": { type: "string", description: "関連 issue でフィルタ" },
@@ -482,7 +481,7 @@ const planCmd = defineCommand({
 });
 
 const tagsCmd = defineCommand({
-  meta: { name: "tags", description: "タグ一覧" },
+  meta: { name: "tags", description: "タグ一覧", alias: "tg" },
   args: {
     json: { type: "boolean", default: false, description: "JSON 出力" },
     dir: { type: "string", description: "ストアディレクトリ" },
@@ -494,7 +493,7 @@ const tagsCmd = defineCommand({
 });
 
 const searchCmd = defineCommand({
-  meta: { name: "search", description: "横断検索" },
+  meta: { name: "search", description: "横断検索", alias: ["find", "fd"] },
   args: {
     keyword: { type: "positional", description: "検索キーワード", required: true },
     type: { type: "string", description: "種別 (issue/adr/spec/plan)" },
@@ -530,7 +529,7 @@ const initCmd = defineCommand({
 });
 
 const graphCmd = defineCommand({
-  meta: { name: "graph", description: "依存グラフ表示" },
+  meta: { name: "graph", description: "依存グラフ表示", alias: "gr" },
   args: {
     plan: { type: "string", description: "plan ID でフィルタ" },
     cycles: { type: "boolean", default: false, description: "循環依存を検出" },
@@ -563,34 +562,10 @@ const webCmd = defineCommand({
   },
 });
 
-const migrateAdrCmd = defineCommand({
-  meta: { name: "migrate-adr", description: "Python 製 ADR CLI から移行" },
-  args: {
-    source: { type: "positional", description: "ソースディレクトリ (docs/adr)", required: true },
-    "dry-run": { type: "boolean", default: false, description: "ドライラン (変換のみ確認)" },
-    dir: { type: "string", description: "ストアディレクトリ" },
-  },
-  async run({ args }) {
-    const ctx = await resolveContext(args.dir);
-    const result = await migrateAdr(ctx.config, {
-      sourceDir: args.source,
-      storeDir: ctx.storeDir,
-      dryRun: args["dry-run"],
-    });
-    console.log(`\n移行完了: ${result.migrated} 件, スキップ: ${result.skipped} 件`);
-    if (result.errors.length > 0) {
-      for (const e of result.errors) {
-        console.error(`エラー: ${e.file}: ${e.message}`);
-      }
-      process.exitCode = 1;
-    }
-  },
-});
-
 export const main = defineCommand({
   meta: {
     name: "qtk",
-    version: "0.1.2",
+    version: "0.1.3",
     description: "Local issue / ADR / spec / plan management CLI tool",
   },
   subCommands: {
@@ -603,7 +578,6 @@ export const main = defineCommand({
     search: searchCmd,
     graph: graphCmd,
     web: webCmd,
-    "migrate-adr": migrateAdrCmd,
   },
 });
 
