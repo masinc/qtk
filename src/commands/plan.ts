@@ -51,8 +51,9 @@ export async function createPlan(
   options: CreatePlanOptions,
 ): Promise<{ id: number; path: string }> {
   const id = await nextId(storeDir, config);
+  const plansDir = join(storeDir, "plans");
   const existing = new Set(
-    readdirSync(join(storeDir, "plans")).filter((f) => f.endsWith(".md")),
+    existsSync(plansDir) ? readdirSync(plansDir).filter((f) => f.endsWith(".md")) : [],
   );
   const slug = uniqueSlug(slugify(options.title), existing);
 
@@ -76,27 +77,73 @@ export async function createPlan(
 
   const body = `## Context (背景・現状・制約)
 
-（計画の背景・動機・現状のコード/アーキテクチャ・制約事項）
+### 背景・動機
+（なぜこの計画が必要か）
+
+### 現状
+（現状のコード/インフラ/アーキテクチャの状況）
+
+### 制約事項
+（技術的制約・スケジュール・リソース制限等）
 
 ## Goals (目的・ゴール・非ゴール・受け入れ基準)
 
-（何を実現するか・なぜ実現するか・非ゴール・Done の定義）
+### What
+（何を実現するか）
+
+### Why
+（なぜ実現するか）
+
+### 非ゴール
+（何をやらないか・スコープ外を明示）
+
+### 受け入れ基準 (Done の定義)
+- [ ] （検証可能な条件を箇条書きで）
 
 ## Design (設計方針・アーキテクチャ・データモデル)
 
-（実現方法・アーキテクチャ・主要モジュール・インターフェース・既存コードとの統合方針）
+### How
+（実現方法）
+
+### アーキテクチャ
+（主要モジュール・コンポーネントの設計。必要なら mermaid ブロックで図示）
+
+### インターフェース・データモデル
+（API 設計・データモデル）
+
+### 代替案と却下理由
+（検討した代替案と却下理由）
+
+### 既存コードとの統合方針
+（既存コード・アーキテクチャパターンとの整合方針）
 
 ## Tasks (タスク一覧)
 
-（番号付きタスク一覧・依存関係・優先度）
+番号付きタスク一覧。依存関係に沿って上から順に実行できるよう配置する。フェーズ分けがある場合は見出しで区切る。
+
+- [ ] T01: タスク名
+  - 依存: なし
+  - 推定難易度: 低/中/高
+  - 該当ファイル: path/to/file
+
+- [ ] T02: タスク名
+  - 依存: T01
+  - 推定難易度: 低/中/高
+  - 該当ファイル: path/to/file
 
 ## Risks (リスク・懸念・緩和策)
 
-（技術的リスク・スケジュールリスク・緩和策）
+### リスク一覧
+- **リスク名**: 説明
+  - 影響度: 高/中/低
+  - 発生確率: 高/中/低
+  - 緩和策: （対策）
 
 ## References (参考リンク・関連ファイル)
 
-（関連ドキュメント・参考コード・調査結果）
+- 関連ドキュメントのリンク
+- 参考にしたコード・ファイルパス
+- 調査結果のまとめ
 `;
 
   await writeRecord(storeDir, "plan", id, slug, { frontmatter, body });
