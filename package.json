@@ -1,6 +1,6 @@
 {
   "name": "@masinc/qtk",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Local issue / ADR / spec / plan management CLI tool (Bun required)",
   "type": "module",
   "bin": {
