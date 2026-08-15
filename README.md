@@ -152,6 +152,7 @@ bun run cli.ts     # 開発実行
 | `triage` | イシューをトリアージロールで状態管理。`qtk issue edit --add-tag` / `--comment` / `--status` で操作 |
 | `wayfinder` | 大規模作業を共有マップとして計画。`qtk plan create` (マップ) + `qtk issue list --ready` (フロンティア) + `qtk issue claim` (クレーム) |
 | `implement` | 仕様・チケットに基づいて実装。`qtk issue list --ready` → `show --json` → `claim` → `edit --status done` のワークフロー |
+| `qtk` | qtk CLI の包括的ガイド。issue / ADR / spec / plan の全コマンド・ワークフロー・データモデルを詳細に扱う |
 
 スキルを使用するには、`skills/` ディレクトリのパスをスキル検索パスに追加してください (opencode の設定で対応)。
 
