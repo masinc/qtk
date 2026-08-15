@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.4] - 2026-08-15
+
+### Fixed
+
+- `qtk web` がビルド済み `dist/cli.js` 経由で実行すると 404 Not Found になるバグを修正（静的ファイルを `dist/web/static/` へ同梱し、パス解決をフォールバック式に変更）
+- `qtk web` の `--port` 省略時の挙動を、固定 3000 番から空きポート自動割り当てに変更（ポート競合による起動失敗を回避）
+
 ## [0.1.3] - 2026-08-15
 
 ### Added

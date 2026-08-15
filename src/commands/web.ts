@@ -4,7 +4,13 @@ import { existsSync } from "node:fs";
 import { resolveContext } from "./context";
 import { handleApi } from "../web/api";
 
-const STATIC_DIR = join(import.meta.dir, "..", "web", "static");
+const STATIC_DIR_CANDIDATES = [
+  join(import.meta.dir, "web", "static"),
+  join(import.meta.dir, "..", "web", "static"),
+];
+const STATIC_DIR =
+  STATIC_DIR_CANDIDATES.find((d) => existsSync(d)) ??
+  join(import.meta.dir, "web", "static");
 
 export interface WebOptions {
   port?: number;
@@ -14,7 +20,7 @@ export interface WebOptions {
 
 export async function startWeb(options: WebOptions = {}): Promise<void> {
   const ctx = await resolveContext(options.dir);
-  const port = options.port ?? 3000;
+  const port = options.port ?? 0;
   const host = "127.0.0.1";
 
   const server = Bun.serve({

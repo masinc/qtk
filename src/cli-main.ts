@@ -549,7 +549,7 @@ const graphCmd = defineCommand({
 const webCmd = defineCommand({
   meta: { name: "web", description: "Web UI / Kanban を起動" },
   args: {
-    port: { type: "string", description: "ポート番号 (デフォルト 3000)" },
+    port: { type: "string", description: "ポート番号 (省略時は空きポートを自動割り当て)" },
     "no-open": { type: "boolean", default: false, description: "ブラウザを自動で開かない" },
     dir: { type: "string", description: "ストアディレクトリ" },
   },
@@ -565,7 +565,7 @@ const webCmd = defineCommand({
 export const main = defineCommand({
   meta: {
     name: "qtk",
-    version: "0.1.3",
+    version: "0.1.4",
     description: "Local issue / ADR / spec / plan management CLI tool",
   },
   subCommands: {

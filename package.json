@@ -1,6 +1,6 @@
 {
   "name": "@masinc/qtk",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Local issue / ADR / spec / plan management CLI tool (Bun required)",
   "type": "module",
   "bin": {
@@ -10,7 +10,7 @@
     "dev": "bun run cli.ts",
     "test": "bun test",
     "typecheck": "tsc --noEmit",
-    "build": "bun build cli.ts --outdir dist --target bun",
+    "build": "bun build cli.ts --outdir dist --target bun && bun run scripts/copy-static.ts",
     "prepublishOnly": "bun test && bun run typecheck && bun run build"
   },
   "keywords": [
@@ -30,6 +30,7 @@
   },
   "files": [
     "dist/",
+    "dist/web/static/",
     "src/",
     "README.md",
     "LICENSE",
