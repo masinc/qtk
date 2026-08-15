@@ -259,7 +259,7 @@ export async function claimIssue(
   id: number,
   options: ClaimOptions = {},
 ): Promise<void> {
-  const lockPath = join(storeDir, ".qtk", "claim.lock");
+  const lockPath = join(storeDir, ".meta", "claim.lock");
   await withFileLock(lockPath, async () => {
     const found = await findIssue(storeDir, id);
     if (!found) throw new Error(`issue #${String(id).padStart(config.idDigits, "0")} が見つかりません`);

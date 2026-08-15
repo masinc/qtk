@@ -1,6 +1,6 @@
 # イシュートラッカー: qtk CLI
 
-このリポジトリのイシュー、仕様、計画、ADR は qtk CLI で管理します。データは `qtk/` ディレクトリの Markdown ファイル (YAML frontmatter 付き) として保存されます。
+このリポジトリのイシュー、仕様、計画、ADR は qtk CLI で管理します。データは `.qtk/` ディレクトリの Markdown ファイル (YAML frontmatter 付き) として保存されます。
 
 ## 初期化
 
@@ -8,16 +8,16 @@
 bunx @masinc/qtk init
 ```
 
-`qtk/` ディレクトリと `config.yml` が作成されます。`config.yml` で採番桁数・ID プレフィックス・autoCommit などを設定できます。
+`.qtk/` ディレクトリと `config.yaml` が作成されます。`config.yaml` で採番桁数・ID プレフィックス・autoCommit などを設定できます。
 
 ## 規約
 
 - 全種別 (issue / adr / spec / plan) で共通採番 (`#0001` 形式、デフォルト4桁)
-- チケットは `qtk/issues/<NNNN>-<slug>.md`
-- ADR は `qtk/adrs/<NNNN>-<slug>.md`
-- 仕様は `qtk/specs/<NNNN>-<slug>.md`
-- 計画は `qtk/plans/<NNNN>-<slug>.md`
-- アーカイブは `qtk/archive/`
+- チケットは `.qtk/issues/<NNNN>-<slug>.md`
+- ADR は `.qtk/adrs/<NNNN>-<slug>.md`
+- 仕様は `.qtk/specs/<NNNN>-<slug>.md`
+- 計画は `.qtk/plans/<NNNN>-<slug>.md`
+- アーカイブは `.qtk/archive/`
 - 依存関係は frontmatter の `dependencies` 配列 (構造化依存)
 - ステータスは frontmatter の `status` フィールド (issue: `new` / `in-progress` / `paused` / `done`)
 - タグは frontmatter の `tags` 配列

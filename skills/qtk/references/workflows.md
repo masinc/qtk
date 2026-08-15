@@ -77,7 +77,7 @@ bunx @masinc/qtk adr new "Use SQLite instead of PostgreSQL" -d "Switch to SQLite
 # → 旧 ADR #0005 の status が自動的に superseded に変更され、superseded_by に 11 が設定される
 
 # 4. 新 ADR の本文を記入 (ファイルを開いて編集)
-# qtk/adrs/0011-*.md の Context / Decision / Consequences を記入
+# .qtk/adrs/0011-*.md の Context / Decision / Consequences を記入
 
 # 5. バリデーション
 bunx @masinc/qtk adr validate

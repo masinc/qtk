@@ -26,7 +26,7 @@ disable-model-invocation: true
 - `docs/adr/` と `src/*/docs/adr/` ディレクトリ
 - `docs/agents/` — このスキルの以前の出力が既に存在するか?
 - `.scratch/` — ローカル Markdown のイシュートラッカー規約が既に使われている兆候
-- `qtk/` — qtk CLI のイシュートラッカー規約が既に使われている兆候
+- `.qtk/` — qtk CLI のイシュートラッカー規約が既に使われている兆候
 - `triage` スキルはインストールされているか? (このスキルの隣に `triage` スキルフォルダがあるか、利用可能なスキルに `triage` があるか。) これでセクション B を実行するかどうかが決まります。
 - モノレポの兆候 — `pnpm-workspace.yaml`、`package.json` の `workspaces` フィールド、または独自の `src/` を持つ populated な `packages/*`。真に大きなマルチパッケージリポジトリにのみ存在します。これらがないということはシングルコンテキストを意味し、ほとんどのリポジトリがこれに該当します。
 
@@ -44,7 +44,7 @@ disable-model-invocation: true
 
 - **GitHub** — イシューはリポジトリの GitHub Issues に置く (`gh` CLI を使用)
 - **GitLab** — イシューはリポジトリの GitLab Issues に置く ([`glab`](https://gitlab.com/gitlab-org/cli) CLI を使用)
-- **qtk CLI** — イシューは `qtk/` ディレクトリの Markdown ファイルとして qtk CLI で管理する (個人プロジェクトやリモートのないリポジトリに適している。構造化依存・原子的クレーム・共通採番付き)
+- **qtk CLI** — イシューは `.qtk/` ディレクトリの Markdown ファイルとして qtk CLI で管理する (個人プロジェクトやリモートのないリポジトリに適している。構造化依存・原子的クレーム・共通採番付き)
 - **ローカル Markdown** — イシューはこのリポジトリの `.scratch/<feature>/` の下にファイルとして置く (後方互換性のため維持。qtk CLI の使用を推奨)
 - **その他** (Jira、Linear など) — ユーザーにワークフローを 1 段落で説明してもらい、スキルは自由形式の散文として記録する
 

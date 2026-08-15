@@ -25,7 +25,7 @@ bunx @masinc/qtk spec create "仕様タイトル" -d "仕様の要約"
 bunx @masinc/qtk spec update <ID> --content "仕様本文 (spec-template に沿った Markdown)"
 ```
 
-または、`spec create` で作成したファイルを直接編集して本文を書き込むこともできます (`qtk/specs/<NNNN>-<slug>.md`)。仕様を issue としてトラッカーに公開する場合は `bunx @masinc/qtk issue create "仕様タイトル" --tag ready-for-agent` を使用します。
+または、`spec create` で作成したファイルを直接編集して本文を書き込むこともできます (`.qtk/specs/<NNNN>-<slug>.md`)。仕様を issue としてトラッカーに公開する場合は `bunx @masinc/qtk issue create "仕様タイトル" --tag ready-for-agent` を使用します。
 
 **ローカルファイルの場合**: `.scratch/<feature-slug>/spec.md` に以下のテンプレートで書き込みます。
 

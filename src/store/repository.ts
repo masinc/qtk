@@ -20,7 +20,7 @@ export function recordPath(storeDir: string, type: RecordType, id: number, slug:
 }
 
 export function ensureStoreDirs(storeDir: string): void {
-  for (const dir of ["issues", "adrs", "specs", "plans", "archive", ".qtk"]) {
+  for (const dir of ["issues", "adrs", "specs", "plans", "archive", ".meta"]) {
     mkdirSync(join(storeDir, dir), { recursive: true });
   }
 }

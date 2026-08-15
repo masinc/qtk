@@ -14,16 +14,18 @@
 ## ストアディレクトリ構成
 
 ```
-<repo-root>/qtk/
-├── config.yml              # 設定ファイル
-├── issues/                 # チケット (NNNN-slug.md)
-├── adrs/                   # ADR (NNNN-slug.md)
-├── specs/                  # 仕様 (NNNN-slug.md)
+<repo-root>/.qtk/
+├── config.yaml             # 設定ファイル
+├── issues/                  # チケット (NNNN-slug.md)
+├── adrs/                    # ADR (NNNN-slug.md)
+├── specs/                   # 仕様 (NNNN-slug.md)
 ├── plans/                   # 計画 (NNNN-slug.md)
-├── archive/                # アーカイブ済み
-└── .qtk/                   # 内部管理 (gitignore 推奨)
-    ├── counter.json         # 採番カウンター
-    └── counter.lock         # 採番ロックファイル
+├── archive/                 # アーカイブ済み
+├── .meta/                   # 内部管理
+│   ├── counter.json         # 採番カウンター (バージョン管理対象)
+│   ├── counter.lock         # 採番ロックファイル (gitignore 対象)
+│   └── claim.lock           # クレームロックファイル (gitignore 対象)
+└── .gitignore               # *.lock を除外 (init 時に自動生成)
 ```
 
 - 全種別で**共通採番** (0001 からの連番)。ファイル名は `<NNNN>-<slug>.md`
@@ -35,7 +37,7 @@
 - **共通採番**: 全種別 (issue / adr / spec / plan) で同一の通し番号
   - 例: #0001 (issue), #0002 (adr), #0003 (spec), #0004 (plan)
 - **プレフィックスなし**: `#0001` 形式 (種別はディレクトリと frontmatter の type で判別)
-- **デフォルト4桁**: `#0001` 〜 `#9999`。`config.yml` の `idDigits` で変更可能
+- **デフォルト4桁**: `#0001` 〜 `#9999`。`config.yaml` の `idDigits` で変更可能
 - **原子的採番**: ファイルロック (proper-lockfile の mkdir 方式) で並列セッションの採番衝突を防止
 - **表示形式**: `#` + ゼロ埋め (例: `#0001`、idDigits=4 の場合)
 

@@ -9,7 +9,7 @@ description: Manage local issues, ADRs, specs, and plans with the qtk CLI. Use w
 
 `qtk` はローカルリポジトリで issue / ADR / spec / plan を一元管理する CLI ツールです。全データは YAML frontmatter 付き Markdown ファイルとして保存され、git でバージョン管理可能です。
 
-- **ストア**: `qtk/` ディレクトリ (リポジトリルートに配置)
+- **ストア**: `.qtk/` ディレクトリ (リポジトリルートに配置、隠蔽ディレクトリ)
 - **実行**: `bunx @masinc/qtk <command>` (Bun ランタイム必須)
 - **ID**: 全種別で共通採番 (`#0001` 形式、デフォルト4桁、プレフィックスなし)
 - **種別**: issue / adr / spec / plan の4種別

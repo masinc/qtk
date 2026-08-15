@@ -16,7 +16,7 @@ bunx @masinc/qtk --help
 ## クイックスタート
 
 ```bash
-# ストア初期化 (qtk/ ディレクトリと config.yml を作成)
+# ストア初期化 (.qtk/ ディレクトリと config.yaml を作成)
 bunx @masinc/qtk init
 
 # チケット作成
@@ -45,7 +45,7 @@ bunx @masinc/qtk search "認証"
 
 | コマンド | 説明 |
 |---|---|
-| `qtk init` | ストアを初期化 (`qtk/` ディレクトリ + `config.yml`) |
+| `qtk init` | ストアを初期化 (`.qtk/` ディレクトリ + `config.yaml` + `.gitignore`) |
 | `qtk issue create "タイトル" [-d 説明] [--ac 基準] [--tag タグ] [--assignee 名前] [--dep 依存ID]` | チケット作成 |
 | `qtk issue list [-s ステータス] [-a 担当者] [--tag タグ] [--ready] [--blocked] [--search キーワード] [--limit n] [--json]` | チケット一覧 |
 | `qtk issue show <ID> [--json]` | チケット詳細 |
@@ -84,21 +84,23 @@ bunx @masinc/qtk search "認証"
 ## ストア構成
 
 ```
-<repo-root>/qtk/
-├── config.yml              # 設定ファイル
-├── issues/                 # チケット (0001-slug.md)
-├── adrs/                   # ADR (0002-slug.md)
-├── specs/                  # 仕様 (0003-slug.md)
-├── plans/                  # 計画 (0004-slug.md)
-├── archive/                # アーカイブ済み
-└── .qtk/                   # 内部管理 (counter.json, counter.lock)
+<repo-root>/.qtk/
+├── config.yaml             # 設定ファイル
+├── issues/                  # チケット (0001-slug.md)
+├── adrs/                    # ADR (0002-slug.md)
+├── specs/                   # 仕様 (0003-slug.md)
+├── plans/                   # 計画 (0004-slug.md)
+├── archive/                 # アーカイブ済み
+├── .meta/                   # 内部管理 (counter.json, *.lock)
+└── .gitignore               # *.lock を除外 (init 時に自動生成)
 ```
 
 - 全種別で共通採番 (`#0001` 形式、デフォルト4桁)
 - ファイル名は `<NNNN>-<slug>.md`
 - 採番はファイルロックで原子的 (並列セッションでも ID 衝突なし)
+- `counter.json` はバージョン管理対象、`*.lock` は gitignore 対象
 
-## 設定 (config.yml)
+## 設定 (config.yaml)
 
 ```yaml
 version: "1.0"

@@ -10,13 +10,19 @@ export interface InitOptions {
 }
 
 export async function initStore(options: InitOptions = {}): Promise<string> {
-  const storeDir = options.dir ?? join(process.cwd(), "qtk");
+  const storeDir = options.dir ?? join(process.cwd(), ".qtk");
 
-  if (existsSync(join(storeDir, "config.yml"))) {
+  if (existsSync(join(storeDir, "config.yaml"))) {
     throw new Error(`既に初期化されています: ${storeDir}`);
   }
 
   ensureStoreDirs(storeDir);
   await writeConfig(storeDir, DEFAULT_CONFIG);
+
+  const gitignorePath = join(storeDir, ".gitignore");
+  if (!existsSync(gitignorePath)) {
+    await Bun.write(gitignorePath, "*.lock\n");
+  }
+
   return storeDir;
 }

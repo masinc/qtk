@@ -22,7 +22,7 @@ const makeStore = (suffix: string) => {
 test("ensureStoreDirs: サブディレクトリを作成する", () => {
   const dir = makeStore("dirs");
   try {
-    for (const d of ["issues", "adrs", "specs", "plans", "archive", ".qtk"]) {
+    for (const d of ["issues", "adrs", "specs", "plans", "archive", ".meta"]) {
       expect(existsSync(join(dir, d))).toBe(true);
     }
   } finally {

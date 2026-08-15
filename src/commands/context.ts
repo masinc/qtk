@@ -8,7 +8,7 @@ export interface CommandContext {
 }
 
 export async function resolveContext(dir?: string): Promise<CommandContext> {
-  const storeDir = dir ?? findStoreDir() ?? "./qtk";
+  const storeDir = dir ?? findStoreDir() ?? "./.qtk";
   const config = await loadConfig(storeDir);
   return { storeDir, config };
 }

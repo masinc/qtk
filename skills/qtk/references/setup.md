@@ -6,24 +6,23 @@
 bunx @masinc/qtk init --defaults
 ```
 
-`qtk/` ディレクトリと `config.yml` が作成されます。サブディレクトリ構成:
+`.qtk/` ディレクトリと `config.yaml` が作成されます。サブディレクトリ構成:
 
 ```
-qtk/
-├── config.yml          # 設定ファイル
-├── issues/             # チケット
-├── adrs/               # ADR
-├── specs/              # 仕様
-├── plans/              # 計画
-├── archive/            # アーカイブ
-└── .qtk/               # 内部管理 (counter.json, counter.lock)
+.qtk/
+├── config.yaml          # 設定ファイル
+├── issues/              # チケット
+├── adrs/                # ADR
+├── specs/               # 仕様
+├── plans/               # 計画
+├── archive/             # アーカイブ
+├── .meta/               # 内部管理 (counter.json, *.lock)
+└── .gitignore           # *.lock を除外 (init 時に自動生成)
 ```
 
-> `.qtk/` は git 管理外を推奨 (`.gitignore` に追加)。
+## 設定ファイル (config.yaml)
 
-## 設定ファイル (config.yml)
-
-`qtk/config.yml` の設定項目:
+`.qtk/config.yaml` の設定項目:
 
 ```yaml
 version: "1.0"
@@ -44,9 +43,19 @@ claimLeaseMinutes: 30           # claim の lease 期限 (分)
 | `planStatuses` | `[drafting, ready, in-progress, completed, superseded, abandoned]` | plan の plan_status 定義 |
 | `claimLeaseMinutes` | `30` | claim の lease 期限 (分)。期限切れ後は再クレーム可能 |
 
+## .gitignore の自動生成
+
+`init` 時に `.qtk/.gitignore` が自動生成されます:
+
+```
+*.lock
+```
+
+`counter.json` はバージョン管理対象 (clone 後も採番が引き継がれる)。`*.lock` (counter.lock, claim.lock) は一時ファイルのため除外。
+
 ## ストアディレクトリの探索
 
-`--dir` オプション未指定時、カレントディレクトリから親方向へ `qtk/config.yml` を探索します。モノレポ等で `qtk/` がルートにない場合も自動的に検出されます。
+`--dir` オプション未指定時、カレントディレクトリから親方向へ `.qtk/config.yaml` を探索します。モノレポ等で `.qtk/` がルートにない場合も自動的に検出されます。
 
 ## 前提条件
 

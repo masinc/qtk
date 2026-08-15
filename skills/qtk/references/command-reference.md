@@ -4,7 +4,7 @@
 
 > **実行形式**: `bunx @masinc/qtk <command>` (以下、表中では `qtk` と省略)
 
-> **共通オプション**: ほぼ全コマンドで `--dir <path>` (ストアディレクトリを明示指定) が使用可能です。未指定時はカレントディレクトリから親方向へ `qtk/config.yml` を探索します。
+> **共通オプション**: ほぼ全コマンドで `--dir <path>` (ストアディレクトリを明示指定) が使用可能です。未指定時はカレントディレクトリから親方向へ `.qtk/config.yaml` を探索します。
 
 > **配列系オプションの制限**: `--ac`、`--tag`、`--dep`、`--add-tag`、`--remove-tag`、`--assignee`、`--related-issue`、`--related-adr` は、現状1つしか指定できません (最後の値で上書き)。複数値が必要な場合は、作成後に Markdown ファイルを直接編集するか、`--add-tag` を複数回実行してください。
 
@@ -34,7 +34,7 @@ qtk init [--defaults] [--dir <path>]
 | `--defaults` | boolean | 非対話実行 (デフォルト値で初期化) |
 | `--dir <path>` | string | ストアディレクトリを指定 |
 
-`qtk/` ディレクトリと `config.yml`、サブディレクトリ (`issues/`, `adrs/`, `specs/`, `plans/`, `archive/`, `.qtk/`) を作成します。既に初期化済みの場合はエラーになります。
+`.qtk/` ディレクトリと `config.yaml`、サブディレクトリ (`issues/`, `adrs/`, `specs/`, `plans/`, `archive/`, `.meta/`)、および `.gitignore` (*.lock 除外) を作成します。既に初期化済みの場合はエラーになります。
 
 ---
 
@@ -121,7 +121,7 @@ qtk issue edit <id> [-d <description>] [--ac <criterion>] [--plan <plan>] [--not
 qtk issue archive <id> [--dir <path>]
 ```
 
-チケットを `qtk/archive/` へ移動します。
+チケットを `.qtk/archive/` へ移動します。
 
 ### issue claim — チケットクレーム (原子的)
 

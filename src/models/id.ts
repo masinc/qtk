@@ -8,7 +8,7 @@ export interface Counter {
 }
 
 export async function readCounter(storeDir: string): Promise<Counter> {
-  const path = join(storeDir, ".qtk", "counter.json");
+  const path = join(storeDir, ".meta", "counter.json");
   try {
     const raw = await Bun.file(path).text();
     const parsed = JSON.parse(raw) as { maxId?: number };
@@ -19,12 +19,12 @@ export async function readCounter(storeDir: string): Promise<Counter> {
 }
 
 export async function writeCounter(storeDir: string, counter: Counter): Promise<void> {
-  const path = join(storeDir, ".qtk", "counter.json");
+  const path = join(storeDir, ".meta", "counter.json");
   await Bun.write(path, JSON.stringify(counter));
 }
 
 export async function nextId(storeDir: string, config: Config): Promise<number> {
-  const lockPath = join(storeDir, ".qtk", "counter.lock");
+  const lockPath = join(storeDir, ".meta", "counter.lock");
   return withFileLock(lockPath, async () => {
     const counter = await readCounter(storeDir);
     const next = counter.maxId + 1;

@@ -30,7 +30,7 @@ bunx @masinc/qtk issue claim <ID> --as "@agent-name"
 ```
 
 - 原子的操作 (ファイルロック付き)。既にクレーム済みで lease 有効ならエラー
-- lease 期限は `config.yml` の `claimLeaseMinutes` (デフォルト30分)
+- lease 期限は `config.yaml` の `claimLeaseMinutes` (デフォルト30分)
 - lease 期限切れのクレームは `bunx @masinc/qtk issue list --stale` で確認
 
 ## 依存関係の管理

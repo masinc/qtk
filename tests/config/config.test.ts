@@ -41,7 +41,7 @@ test("writeConfig / loadConfig: 往復で設定が保持される", async () => 
 test("findStoreDir: 親ディレクトリを探索する", async () => {
   const root = makeStore("find");
   try {
-    const qtkDir = join(root, "qtk");
+    const qtkDir = join(root, ".qtk");
     mkdirSync(qtkDir, { recursive: true });
     await writeConfig(qtkDir, DEFAULT_CONFIG);
     const nested = join(root, "a", "b", "c");

@@ -8,7 +8,7 @@ import type { Config } from "../../src/models/types";
 const makeStore = (suffix: string) => {
   const dir = join(tmpdir(), `qtk-id-${Date.now()}-${suffix}`);
   mkdirSync(dir, { recursive: true });
-  mkdirSync(join(dir, ".qtk"), { recursive: true });
+  mkdirSync(join(dir, ".meta"), { recursive: true });
   return dir;
 };
 
