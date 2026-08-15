@@ -141,8 +141,11 @@ $OutputEncoding = [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 ```bash
 bun install        # 依存インストール
 bun test           # テスト実行
+bun run typecheck  # 型チェック
 bun run cli.ts     # 開発実行
 ```
+
+リリース手順は [RELEASE.md](./RELEASE.md) を参照。
 
 ## スキル統合
 

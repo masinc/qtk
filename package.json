@@ -11,7 +11,7 @@
     "test": "bun test",
     "typecheck": "tsc --noEmit",
     "build": "bun build cli.ts --outdir dist --target bun",
-    "prepublishOnly": "bun test && tsc --noEmit && bun run build"
+    "prepublishOnly": "bun test && bun run typecheck && bun run build"
   },
   "keywords": [
     "issue",
