@@ -6,13 +6,20 @@
 
 - [Bun](https://bun.sh) がインストールされていること
 - npm アカウント `masinc` が 2 要素認証 (OTP) 有効で設定済みであること
-- `bun login` で npm レジストリにログイン済みであること (初回のみ)
+- `bunx npm login` で npm レジストリにログイン済みであること (初回のみ)
 
 ```bash
-bun login
+bunx npm login
 # → Username: masinc
 # → Password: ********
 # → Email: (公開用メールアドレス)
+```
+
+ログイン確認:
+
+```bash
+bun pm whoami
+# → masinc が表示されれば OK (401 の場合は未ログイン)
 ```
 
 ## バージョン番号の更新
