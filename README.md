@@ -6,6 +6,8 @@ Markdown ファイル (YAML frontmatter 付き) をストアとして、チケ�
 
 > **注意**: qtk は **Bun ランタイム必須** です。`bunx @masinc/qtk` で実行してください。`npx` では動作しません。
 
+> **0.1.0 からの破壊的変更**: 0.1.1 でストアディレクトリが `qtk/` から `.qtk/` に、設定ファイルが `config.yml` から `config.yaml` に、内部メタディレクトリが `.qtk/` から `.meta/` にリネームされました。0.1.0 をお使いの方は `qtk init` を再実行してください。
+
 ## インストール
 
 ```bash
@@ -164,4 +166,4 @@ npx skills add https://github.com/masinc/skills.git -g
 
 ## ライセンス
 
-MIT
+MIT — 詳細は [LICENSE](./LICENSE) を参照。変更履歴は [CHANGELOG.md](./CHANGELOG.md) を参照。

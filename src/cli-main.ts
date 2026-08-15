@@ -590,7 +590,7 @@ const migrateAdrCmd = defineCommand({
 export const main = defineCommand({
   meta: {
     name: "qtk",
-    version: "0.1.0",
+    version: "0.1.1",
     description: "Local issue / ADR / spec / plan management CLI tool",
   },
   subCommands: {
