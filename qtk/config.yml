@@ -1,0 +1,21 @@
+version: "1.0"
+idDigits: 4
+defaultStatus: new
+statuses: 
+  - new
+  - in-progress
+  - paused
+  - done
+adrStatuses: 
+  - proposed
+  - accepted
+  - deprecated
+  - superseded
+planStatuses: 
+  - drafting
+  - ready
+  - in-progress
+  - completed
+  - superseded
+  - abandoned
+claimLeaseMinutes: 30
