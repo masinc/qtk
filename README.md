@@ -144,7 +144,7 @@ bun run cli.ts     # 開発実行
 
 ## スキル統合
 
-`skills/` ディレクトリに、Matt Pocock のエンジニアリングスキル群の qtk CLI 統合版が配置されています。既存スキルの「ローカル Markdown」選択肢 (`.scratch/` 規約) を qtk CLI 呼び出しに差し替えた版です。GitHub / GitLab 選択肢は維持されています。
+qtk CLI は [masinc/skills](https://github.com/masinc/skills) リポジトリで配布されているスキル群と統合されています。以下のスキルが qtk CLI を選択肢としてサポートしています:
 
 | スキル | 説明 |
 |---|---|
@@ -156,7 +156,11 @@ bun run cli.ts     # 開発実行
 | `implement` | 仕様・チケットに基づいて実装。`qtk issue list --ready` → `show --json` → `claim` → `edit --status done` のワークフロー |
 | `qtk` | qtk CLI の包括的ガイド。issue / ADR / spec / plan の全コマンド・ワークフロー・データモデルを詳細に扱う |
 
-スキルを使用するには、`skills/` ディレクトリのパスをスキル検索パスに追加してください (opencode の設定で対応)。
+スキルのインストール:
+
+```bash
+npx skills add https://github.com/masinc/skills.git -g
+```
 
 ## ライセンス
 
