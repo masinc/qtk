@@ -146,6 +146,37 @@ bun run typecheck  # 型チェック
 bun run cli.ts     # 開発実行
 ```
 
+### Web UI の開発フロー
+
+Web UI は Bun workspaces モノレポ構成です。バックエンド (Hono) は `src/web/`、フロントエンド (Svelte 5 + Vite + Tailwind v4 + daisyUI 5) は `web/` にあります。
+
+**フロントエンドを編集する場合** — 2プロセス起動 (ターミナル2つ):
+
+```powershell
+# ターミナル1: API サーバー (Hono, port 3000)
+bun run cli.ts web --no-open
+
+# ターミナル2: フロントエンド dev サーバー (Vite, port 5173, HMR)
+bun run --filter @masinc/qtk-web dev
+```
+
+ブラウザで http://localhost:5173/ を開きます。Vite が `/api` を `localhost:3000` へプロキシするため、フロントエンドの変更は HMR で即時反映されます。
+
+**バックエンドのみ編集する場合** — フロントエンドの dev サーバーは不要です。`bun run cli.ts web` が配信するのは `web/dist` (Vite ビルド済みの静的ファイル) なので、フロントエンドの変更を反映するには `bun run build` が必要です。
+
+**テスト**:
+
+```bash
+bun test                              # 既存テスト (API/CLI/store、Bun)
+bun run --filter @masinc/qtk-web test # フロントエンドコンポーネントテスト (Vitest)
+```
+
+**ビルド**:
+
+```bash
+bun run build   # Vite ビルド → CLI ビルド → web/dist を dist/web/static/ へコピー
+```
+
 * リリース手順は [RELEASE.md](./RELEASE.md)
 * 変更履歴は [CHANGELOG.md](./CHANGELOG.md)
  

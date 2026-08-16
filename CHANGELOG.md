@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Web UI バックエンドを Hono + Zod に移行（`src/web/hono-app.ts` 新設、Zod バリデーション、`hono/client` による型安全 RPC）
+- Web UI フロントエンドを Svelte 5 + Vite + Tailwind CSS v4 + daisyUI 5 に移行（`web/` workspace 新設、コンポーネント分割、runes による状態管理）
+- フロントエンドコンポーネントテスト基盤（Vitest + @testing-library/svelte）を追加
+- Bun workspaces モノレポ構成を導入（`web/` workspace）
+
+### Changed
+
+- `qtk web` の静的ファイル配信元を `src/web/static/` から Vite ビルド成果物（`web/dist/` → `dist/web/static/`）に変更
+- ビルドスクリプトを Vite ビルド → CLI ビルド → 静的ファイルコピーの3段階に変更
+
+### Removed
+
+- 旧 Web UI（単一 HTML の `src/web/static/index.html`）を削除
+
 ## [0.1.4] - 2026-08-15
 
 ### Fixed

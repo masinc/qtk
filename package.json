@@ -3,14 +3,17 @@
   "version": "0.1.4",
   "description": "Local issue / ADR / spec / plan management CLI tool (Bun required)",
   "type": "module",
+  "workspaces": [
+    "web"
+  ],
   "bin": {
     "qtk": "dist/cli.js"
   },
   "scripts": {
     "dev": "bun run cli.ts",
-    "test": "bun test",
+    "test": "bun test ./tests",
     "typecheck": "tsc --noEmit",
-    "build": "bun build cli.ts --outdir dist --target bun && bun run scripts/copy-static.ts",
+    "build": "bun run --filter @masinc/qtk-web build && bun build cli.ts --outdir dist --target bun && bun run scripts/copy-static.ts",
     "prepublishOnly": "bun test && bun run typecheck && bun run build"
   },
   "keywords": [
@@ -37,13 +40,17 @@
     "CHANGELOG.md"
   ],
   "dependencies": {
+    "@hono/zod-validator": "^0.9.0",
     "citty": "^0.2.2",
     "cli-table3": "^0.6.0",
-    "proper-lockfile": "^4.1.2"
+    "hono": "^4.13.0",
+    "proper-lockfile": "^4.1.2",
+    "zod": "^4.4.0"
   },
   "devDependencies": {
     "@types/bun": "latest",
     "@types/proper-lockfile": "^4.1.4",
+    "bun-types": "latest",
     "typescript": "^5.0.0"
   }
 }

@@ -2,11 +2,11 @@
 import { join } from "node:path";
 import { existsSync } from "node:fs";
 import { resolveContext } from "./context";
-import { handleApi } from "../web/api";
+import { createApp } from "../web/hono-app";
 
 const STATIC_DIR_CANDIDATES = [
   join(import.meta.dir, "web", "static"),
-  join(import.meta.dir, "..", "web", "static"),
+  join(import.meta.dir, "..", "..", "web", "dist"),
 ];
 const STATIC_DIR =
   STATIC_DIR_CANDIDATES.find((d) => existsSync(d)) ??
@@ -22,6 +22,7 @@ export async function startWeb(options: WebOptions = {}): Promise<void> {
   const ctx = await resolveContext(options.dir);
   const port = options.port ?? 0;
   const host = "127.0.0.1";
+  const app = createApp(ctx);
 
   const server = Bun.serve({
     hostname: host,
@@ -31,7 +32,7 @@ export async function startWeb(options: WebOptions = {}): Promise<void> {
 
       // API ルート
       if (url.pathname.startsWith("/api/")) {
-        return handleApi(ctx, req);
+        return app.fetch(req);
       }
 
       // 静的ファイル
@@ -41,6 +42,15 @@ export async function startWeb(options: WebOptions = {}): Promise<void> {
         const file = Bun.file(filePath);
         return new Response(file, {
           headers: { "Content-Type": contentType(filePath) },
+        });
+      }
+
+      // SPA フォールバック (拡張子なしのパスのみ)
+      const indexPath = join(STATIC_DIR, "index.html");
+      if (!path.includes(".") && existsSync(indexPath)) {
+        const file = Bun.file(indexPath);
+        return new Response(file, {
+          headers: { "Content-Type": contentType(indexPath) },
         });
       }
 
@@ -67,5 +77,6 @@ function contentType(path: string): string {
   if (path.endsWith(".html")) return "text/html; charset=utf-8";
   if (path.endsWith(".css")) return "text/css; charset=utf-8";
   if (path.endsWith(".js")) return "text/javascript; charset=utf-8";
+  if (path.endsWith(".svg")) return "image/svg+xml";
   return "application/octet-stream";
 }
