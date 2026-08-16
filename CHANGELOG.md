@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.5] - 2026-08-16
+
+### Added
+
+- `dev:web` スクリプト（`scripts/dev-web.ts`）で API サーバーと Vite dev サーバーを1コマンドで同時起動
+- Biome（lint / format）を導入（`biome.json`、`lint` / `lint:fix` / `format` スクリプト）
+- `typecheck:web`（svelte-check）と `test:web`（Vitest）を追加。`typecheck` / `test` は backend + frontend 両方を実行するように変更
+- `build` を `build:web`（Vite ビルド + 静的ファイルコピー）と `build:cli`（CLI ビルド）に分割
+
+### Changed
+
+- 既存コード全体に Biome のフォーマット・lint 修正を適用（noNonNullAssertion / noUnusedImports 等の解消）
+
 ## [Unreleased]
 
 ### Added
@@ -86,6 +99,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Web UI / Kanban.
 - Dependency graph with cycle detection.
 
+[0.1.5]: https://github.com/masinc/qtk/compare/v0.1.4...v0.1.5
 [0.1.3]: https://github.com/masinc/qtk/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/masinc/qtk/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/masinc/qtk/compare/v0.1.0...v0.1.1

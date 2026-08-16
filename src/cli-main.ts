@@ -567,7 +567,7 @@ const webCmd = defineCommand({
 export const main = defineCommand({
   meta: {
     name: "qtk",
-    version: "0.1.4",
+    version: "0.1.5",
     description: "Local issue / ADR / spec / plan management CLI tool",
   },
   subCommands: {
