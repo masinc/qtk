@@ -1,6 +1,7 @@
 // T02 スパイク検証: citty の引数パーステスト
-import { defineCommand, runCommand, runMain } from "citty";
-import { test, expect } from "bun:test";
+
+import { expect, test } from "bun:test";
+import { defineCommand, runCommand } from "citty";
 
 const issue = defineCommand({
   meta: { name: "issue", description: "チケット管理" },

@@ -1,8 +1,14 @@
-import { test, expect } from "bun:test";
-import { mkdirSync, rmSync, existsSync } from "node:fs";
-import { join } from "node:path";
+import { expect, test } from "bun:test";
+import { existsSync, mkdirSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { DEFAULT_CONFIG, loadConfig, writeConfig, findStoreDir, configPath } from "../../src/config/config";
+import { join } from "node:path";
+import {
+  configPath,
+  DEFAULT_CONFIG,
+  findStoreDir,
+  loadConfig,
+  writeConfig,
+} from "../../src/config/config";
 
 const makeStore = (suffix: string) => {
   const dir = join(tmpdir(), `qtk-config-${Date.now()}-${suffix}`);

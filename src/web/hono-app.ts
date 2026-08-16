@@ -1,16 +1,11 @@
 // Web UI API (Hono アプリ定義)
-import { Hono } from "hono";
+
 import { zValidator } from "@hono/zod-validator";
+import { Hono } from "hono";
 import { z } from "zod";
-import type { Config } from "../models/types";
-import {
-  createIssue,
-  listIssueFiles,
-  editIssue,
-  claimIssue,
-  findIssue,
-} from "../commands/issue";
+import { claimIssue, createIssue, editIssue, findIssue, listIssueFiles } from "../commands/issue";
 import { formatId } from "../models/id";
+import type { Config } from "../models/types";
 
 export interface WebContext {
   storeDir: string;
@@ -56,38 +51,30 @@ export function createApp(ctx: WebContext) {
       });
       return c.json({ id, idLabel: formatId(id, ctx.config) }, 201);
     })
-    .post(
-      "/api/issues/:id/edit",
-      zValidator("json", editIssueSchema),
-      async (c) => {
-        const id = parseInt(c.req.param("id"), 10);
-        const found = await findIssue(ctx.storeDir, id);
-        if (!found) return c.json({ error: "issue が見つかりません" }, 404);
-        const body = c.req.valid("json");
-        await editIssue(ctx.storeDir, ctx.config, id, {
-          status: body.status,
-          description: body.description,
-          addTags: body.addTags,
-          removeTags: body.removeTags,
-          comment: body.comment,
-        });
+    .post("/api/issues/:id/edit", zValidator("json", editIssueSchema), async (c) => {
+      const id = parseInt(c.req.param("id"), 10);
+      const found = await findIssue(ctx.storeDir, id);
+      if (!found) return c.json({ error: "issue が見つかりません" }, 404);
+      const body = c.req.valid("json");
+      await editIssue(ctx.storeDir, ctx.config, id, {
+        status: body.status,
+        description: body.description,
+        addTags: body.addTags,
+        removeTags: body.removeTags,
+        comment: body.comment,
+      });
+      return c.json({ ok: true, id });
+    })
+    .post("/api/issues/:id/claim", zValidator("json", claimSchema), async (c) => {
+      const id = parseInt(c.req.param("id"), 10);
+      const body = c.req.valid("json");
+      try {
+        await claimIssue(ctx.storeDir, ctx.config, id, { as: body.as });
         return c.json({ ok: true, id });
-      },
-    )
-    .post(
-      "/api/issues/:id/claim",
-      zValidator("json", claimSchema),
-      async (c) => {
-        const id = parseInt(c.req.param("id"), 10);
-        const body = c.req.valid("json");
-        try {
-          await claimIssue(ctx.storeDir, ctx.config, id, { as: body.as });
-          return c.json({ ok: true, id });
-        } catch (err) {
-          return c.json({ error: (err as Error).message }, 409);
-        }
-      },
-    )
+      } catch (err) {
+        return c.json({ error: (err as Error).message }, 409);
+      }
+    })
     .notFound((c) => c.json({ error: "Not Found" }, 404));
 
   return app;

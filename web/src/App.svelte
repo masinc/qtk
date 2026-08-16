@@ -1,38 +1,38 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import Board from "./components/Board.svelte";
-  import CreateModal from "./components/CreateModal.svelte";
-  import DetailModal from "./components/DetailModal.svelte";
-  import Toast from "./components/Toast.svelte";
-  import { issueStore } from "./stores/issues.svelte";
-  import type { Issue } from "./lib/types";
+import { onMount } from "svelte";
+import type { Issue } from "./lib/types";
+import { issueStore } from "./stores/issues.svelte";
+import Board from "./components/Board.svelte";
+import CreateModal from "./components/CreateModal.svelte";
+import DetailModal from "./components/DetailModal.svelte";
+import Toast from "./components/Toast.svelte";
 
-  let createOpen = $state(false);
-  let detailOpen = $state(false);
-  let detailIssue = $state<Issue | null>(null);
-  let toastMessage = $state("");
-  let toastError = $state(false);
-  let toastTimer: ReturnType<typeof setTimeout> | undefined;
+let _createOpen = $state(false);
+let _detailOpen = $state(false);
+let _detailIssue = $state<Issue | null>(null);
+let _toastMessage = $state("");
+let _toastError = $state(false);
+let toastTimer: ReturnType<typeof setTimeout> | undefined;
 
-  function showToast(message: string, isError = false) {
-    toastMessage = message;
-    toastError = isError;
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => {
-      toastMessage = "";
-    }, 2500);
-  }
+function showToast(message: string, isError = false) {
+  _toastMessage = message;
+  _toastError = isError;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    _toastMessage = "";
+  }, 2500);
+}
 
-  function openDetail(id: number) {
-    const issue = issueStore.issues.find((i) => i.id === id);
-    if (!issue) return;
-    detailIssue = issue;
-    detailOpen = true;
-  }
+function _openDetail(id: number) {
+  const issue = issueStore.issues.find((i) => i.id === id);
+  if (!issue) return;
+  _detailIssue = issue;
+  _detailOpen = true;
+}
 
-  onMount(() => {
-    issueStore.load().catch((err) => showToast((err as Error).message, true));
-  });
+onMount(() => {
+  issueStore.load().catch((err) => showToast((err as Error).message, true));
+});
 </script>
 
 <header class="navbar bg-base-100 border-b border-base-300">
@@ -40,7 +40,7 @@
     <h1 class="text-xl font-bold">qtk Kanban</h1>
   </div>
   <div class="navbar-end">
-    <button class="btn btn-primary" onclick={() => (createOpen = true)}>
+    <button class="btn btn-primary" onclick={() => (_createOpen = true)}>
       + 新規チケット
     </button>
   </div>
@@ -48,24 +48,24 @@
 
 <main class="p-6 max-w-[1400px] mx-auto">
   <Board
-    onselect={openDetail}
+    onselect={_openDetail}
     onerror={(m) => showToast(m, true)}
   />
 </main>
 
 <CreateModal
-  open={createOpen}
-  onclose={() => (createOpen = false)}
+  open={_createOpen}
+  onclose={() => (_createOpen = false)}
   onsuccess={(m) => showToast(m)}
   onerror={(m) => showToast(m, true)}
 />
 
 <DetailModal
-  issue={detailIssue}
-  open={detailOpen}
-  onclose={() => (detailOpen = false)}
+  issue={_detailIssue}
+  open={_detailOpen}
+  onclose={() => (_detailOpen = false)}
   onsuccess={(m) => showToast(m)}
   onerror={(m) => showToast(m, true)}
 />
 
-<Toast message={toastMessage} isError={toastError} />
+<Toast message={_toastMessage} isError={_toastError} />

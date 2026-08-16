@@ -1,4 +1,4 @@
-import { test, expect } from "bun:test";
+import { expect, test } from "bun:test";
 import { filterRecords } from "../../src/query/filter";
 import { parseMarkdown } from "../../src/store/markdown";
 

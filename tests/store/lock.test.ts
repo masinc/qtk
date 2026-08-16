@@ -1,8 +1,8 @@
-import { test, expect } from "bun:test";
+import { expect, test } from "bun:test";
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { withFileLock, isLocked } from "../../src/store/lock";
+import { join } from "node:path";
+import { isLocked, withFileLock } from "../../src/store/lock";
 
 const lockFile = (suffix: string) => {
   const dir = join(tmpdir(), `qtk-lock-${Date.now()}-${suffix}`);
@@ -36,33 +36,37 @@ test("withFileLock: ロック中は再取得できない", async () => {
   }
 });
 
-test("withFileLock: 並列実行で ID が重複しない", async () => {
-  const { dir, file } = lockFile("parallel");
-  try {
-    const counterPath = join(dir, "counter.json");
-    const readCounter = async () => {
-      try {
-        const raw = await Bun.file(counterPath).text();
-        const parsed = JSON.parse(raw) as { maxId?: number };
-        return { maxId: parsed.maxId ?? 0 };
-      } catch {
-        return { maxId: 0 };
-      }
-    };
-    const writeCounter = async (c: { maxId: number }) =>
-      await Bun.write(counterPath, JSON.stringify(c));
+test(
+  "withFileLock: 並列実行で ID が重複しない",
+  async () => {
+    const { dir, file } = lockFile("parallel");
+    try {
+      const counterPath = join(dir, "counter.json");
+      const readCounter = async () => {
+        try {
+          const raw = await Bun.file(counterPath).text();
+          const parsed = JSON.parse(raw) as { maxId?: number };
+          return { maxId: parsed.maxId ?? 0 };
+        } catch {
+          return { maxId: 0 };
+        }
+      };
+      const writeCounter = async (c: { maxId: number }) =>
+        await Bun.write(counterPath, JSON.stringify(c));
 
-    const nextId = async () =>
-      withFileLock(file, async () => {
-        const counter = await readCounter();
-        const next = counter.maxId + 1;
-        await writeCounter({ maxId: next });
-        return next;
-      });
+      const nextId = async () =>
+        withFileLock(file, async () => {
+          const counter = await readCounter();
+          const next = counter.maxId + 1;
+          await writeCounter({ maxId: next });
+          return next;
+        });
 
-    const ids = await Promise.all(Array.from({ length: 10 }, () => nextId()));
-    expect(new Set(ids).size).toBe(10);
-  } finally {
-    rmSync(dir, { recursive: true, force: true });
-  }
-}, { timeout: 30000 });
+      const ids = await Promise.all(Array.from({ length: 10 }, () => nextId()));
+      expect(new Set(ids).size).toBe(10);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  },
+  { timeout: 30000 },
+);

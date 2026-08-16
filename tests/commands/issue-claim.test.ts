@@ -1,10 +1,10 @@
-import { test, expect } from "bun:test";
+import { expect, test } from "bun:test";
 import { mkdirSync, rmSync } from "node:fs";
-import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { createIssue, claimIssue, findIssue, isStaleClaim } from "../../src/commands/issue";
-import { ensureStoreDirs } from "../../src/store/repository";
+import { join } from "node:path";
+import { claimIssue, createIssue, findIssue, isStaleClaim } from "../../src/commands/issue";
 import { DEFAULT_CONFIG } from "../../src/config/config";
+import { ensureStoreDirs } from "../../src/store/repository";
 
 const makeStore = (suffix: string) => {
   const dir = join(tmpdir(), `qtk-claim-${Date.now()}-${suffix}`);
@@ -51,16 +51,14 @@ test("claimIssue: lease 期限切れなら再クレームできる", async () =>
     // lease を過去に書き換え
     const found = await findIssue(dir, id);
     const past = new Date(Date.now() - 1000).toISOString();
-    const content = await Bun.file(join(dir, "issues", `0001-${found!.slug}.md`)).text();
-    const updated = content.replace(
-      /lease_expires_at:.*/,
-      `lease_expires_at: "${past}"`,
-    );
-    await Bun.write(join(dir, "issues", `0001-${found!.slug}.md`), updated);
+    const content = await Bun.file(join(dir, "issues", `0001-${found?.slug}.md`)).text();
+    const updated = content.replace(/lease_expires_at:.*/, `lease_expires_at: "${past}"`);
+    await Bun.write(join(dir, "issues", `0001-${found?.slug}.md`), updated);
 
     // stale 判定
     const found2 = await findIssue(dir, id);
-    expect(isStaleClaim(found2!.record)).toBe(true);
+    if (!found2) throw new Error("issue が見つからない");
+    expect(isStaleClaim(found2.record)).toBe(true);
 
     // 再クレームできる
     await claimIssue(dir, DEFAULT_CONFIG, id, { as: "agent-b" });
@@ -71,20 +69,24 @@ test("claimIssue: lease 期限切れなら再クレームできる", async () =>
   }
 });
 
-test("claimIssue: 並列クレームで衝突しない", async () => {
-  const dir = makeStore("parallel");
-  try {
-    const { id } = await createIssue(dir, DEFAULT_CONFIG, { title: "テスト" });
-    const results = await Promise.allSettled([
-      claimIssue(dir, DEFAULT_CONFIG, id, { as: "agent-a" }),
-      claimIssue(dir, DEFAULT_CONFIG, id, { as: "agent-b" }),
-      claimIssue(dir, DEFAULT_CONFIG, id, { as: "agent-c" }),
-    ]);
-    const fulfilled = results.filter((r) => r.status === "fulfilled").length;
-    const rejected = results.filter((r) => r.status === "rejected").length;
-    expect(fulfilled).toBe(1);
-    expect(rejected).toBe(2);
-  } finally {
-    rmSync(dir, { recursive: true, force: true });
-  }
-}, { timeout: 30000 });
+test(
+  "claimIssue: 並列クレームで衝突しない",
+  async () => {
+    const dir = makeStore("parallel");
+    try {
+      const { id } = await createIssue(dir, DEFAULT_CONFIG, { title: "テスト" });
+      const results = await Promise.allSettled([
+        claimIssue(dir, DEFAULT_CONFIG, id, { as: "agent-a" }),
+        claimIssue(dir, DEFAULT_CONFIG, id, { as: "agent-b" }),
+        claimIssue(dir, DEFAULT_CONFIG, id, { as: "agent-c" }),
+      ]);
+      const fulfilled = results.filter((r) => r.status === "fulfilled").length;
+      const rejected = results.filter((r) => r.status === "rejected").length;
+      expect(fulfilled).toBe(1);
+      expect(rejected).toBe(2);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  },
+  { timeout: 30000 },
+);

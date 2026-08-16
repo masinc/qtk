@@ -1,12 +1,30 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/svelte";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import Board from "../../src/components/Board.svelte";
-import { issueStore } from "../../src/stores/issues.svelte";
 import type { Issue } from "../../src/lib/types";
+import { issueStore } from "../../src/stores/issues.svelte";
 
 const issues: Issue[] = [
-  { id: 1, idLabel: "#0001", title: "new のチケット", description: "", status: "new", tags: [], claimed_by: null, body: "" },
-  { id: 2, idLabel: "#0002", title: "done のチケット", description: "", status: "done", tags: [], claimed_by: null, body: "" },
+  {
+    id: 1,
+    idLabel: "#0001",
+    title: "new のチケット",
+    description: "",
+    status: "new",
+    tags: [],
+    claimed_by: null,
+    body: "",
+  },
+  {
+    id: 2,
+    idLabel: "#0002",
+    title: "done のチケット",
+    description: "",
+    status: "done",
+    tags: [],
+    claimed_by: null,
+    body: "",
+  },
 ];
 
 describe("Board", () => {

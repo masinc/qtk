@@ -1,24 +1,17 @@
 // Phase 1 統合テスト (E2E シナリオ)
-import { test, expect, beforeAll, afterAll } from "bun:test";
+import { afterAll, beforeAll, expect, test } from "bun:test";
 import { mkdirSync, rmSync } from "node:fs";
-import { join } from "node:path";
 import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { editAdr, findAdr, newAdr, validateAdrs } from "../../src/commands/adr";
 import { initStore } from "../../src/commands/init";
-import { loadConfig } from "../../src/config/config";
-import {
-  createIssue,
-  listIssues,
-  showIssue,
-  editIssue,
-  findIssue,
-} from "../../src/commands/issue";
-import { newAdr, editAdr, validateAdrs, findAdr } from "../../src/commands/adr";
-import { createPlan, findPlan, editPlan } from "../../src/commands/plan";
+import { createIssue, editIssue, findIssue, listIssueFiles } from "../../src/commands/issue";
+import { createPlan, editPlan, findPlan } from "../../src/commands/plan";
+import { searchAll } from "../../src/commands/search";
 import { createSpec, findSpec } from "../../src/commands/spec";
 import { collectTags } from "../../src/commands/tags";
-import { searchAll } from "../../src/commands/search";
-import { getReadyIssues, getBlockedIssues } from "../../src/query/dependencies";
-import { listIssueFiles } from "../../src/commands/issue";
+import { loadConfig } from "../../src/config/config";
+import { getBlockedIssues, getReadyIssues } from "../../src/query/dependencies";
 
 let storeDir: string;
 let config: Awaited<ReturnType<typeof loadConfig>>;

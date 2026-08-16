@@ -141,8 +141,9 @@ $OutputEncoding = [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
 ```bash
 bun install        # 依存インストール
-bun test           # テスト実行
-bun run typecheck  # 型チェック
+bun test           # テスト実行 (backend + frontend)
+bun run typecheck  # 型チェック (tsc + svelte-check)
+bun run lint       # lint (Biome)
 bun run cli.ts     # 開発実行
 ```
 
@@ -150,31 +151,53 @@ bun run cli.ts     # 開発実行
 
 Web UI は Bun workspaces モノレポ構成です。バックエンド (Hono) は `src/web/`、フロントエンド (Svelte 5 + Vite + Tailwind v4 + daisyUI 5) は `web/` にあります。
 
-**フロントエンドを編集する場合** — 2プロセス起動 (ターミナル2つ):
+**フロントエンドを編集する場合** — 1コマンドで API サーバー (port 3000) と Vite dev サーバー (port 5173, HMR) を同時起動:
 
 ```powershell
-# ターミナル1: API サーバー (Hono, port 3000)
-bun run cli.ts web --no-open
-
-# ターミナル2: フロントエンド dev サーバー (Vite, port 5173, HMR)
-bun run --filter @masinc/qtk-web dev
+bun run dev:web
 ```
 
-ブラウザで http://localhost:5173/ を開きます。Vite が `/api` を `localhost:3000` へプロキシするため、フロントエンドの変更は HMR で即時反映されます。
+ブラウザで http://localhost:5173/ を開きます。Vite が `/api` を `localhost:3000` へプロキシするため、フロントエンドの変更は HMR で即時反映されます。Ctrl+C で両方停止します。
 
-**バックエンドのみ編集する場合** — フロントエンドの dev サーバーは不要です。`bun run cli.ts web` が配信するのは `web/dist` (Vite ビルド済みの静的ファイル) なので、フロントエンドの変更を反映するには `bun run build` が必要です。
+個別に起動する場合:
+
+```powershell
+bun run dev:cli   # CLI のみ (bun run cli.ts と同じ)
+bun run cli.ts web --no-open --port 3000   # API サーバーのみ
+bun run --filter @masinc/qtk-web dev       # Vite dev サーバーのみ
+```
+
+**バックエンドのみ編集する場合** — フロントエンドの dev サーバーは不要です。`bun run cli.ts web` が配信するのは `web/dist` (Vite ビルド済みの静的ファイル) なので、フロントエンドの変更を反映するには `bun run build:web` が必要です。
 
 **テスト**:
 
 ```bash
-bun test                              # 既存テスト (API/CLI/store、Bun)
-bun run --filter @masinc/qtk-web test # フロントエンドコンポーネントテスト (Vitest)
+bun test                              # 既存テスト (API/CLI/store、Bun) + フロントエンド (Vitest)
+bun run test:web                      # フロントエンドコンポーネントテストのみ (Vitest)
+bun run --filter @masinc/qtk-web test:watch  # フロントエンドテストを watch モードで実行
+```
+
+**型チェック**:
+
+```bash
+bun run typecheck       # tsc (backend) + svelte-check (frontend)
+bun run typecheck:web   # フロントエンドのみ (svelte-check)
+```
+
+**lint / format** (Biome):
+
+```bash
+bun run lint        # lint チェック
+bun run lint:fix    # lint 自動修正
+bun run format      # フォーマット適用
 ```
 
 **ビルド**:
 
 ```bash
-bun run build   # Vite ビルド → CLI ビルド → web/dist を dist/web/static/ へコピー
+bun run build        # フルビルド (web → cli)
+bun run build:web    # フロントエンドのみ (vite build + web/dist を dist/web/static/ へコピー)
+bun run build:cli    # CLI のみ (bun build cli.ts)
 ```
 
 * リリース手順は [RELEASE.md](./RELEASE.md)

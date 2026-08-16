@@ -1,16 +1,16 @@
 // qtk web コマンド (ローカル Web UI / Kanban)
-import { join } from "node:path";
+
 import { existsSync } from "node:fs";
-import { resolveContext } from "./context";
+import { join } from "node:path";
 import { createApp } from "../web/hono-app";
+import { resolveContext } from "./context";
 
 const STATIC_DIR_CANDIDATES = [
   join(import.meta.dir, "web", "static"),
   join(import.meta.dir, "..", "..", "web", "dist"),
 ];
 const STATIC_DIR =
-  STATIC_DIR_CANDIDATES.find((d) => existsSync(d)) ??
-  join(import.meta.dir, "web", "static");
+  STATIC_DIR_CANDIDATES.find((d) => existsSync(d)) ?? join(import.meta.dir, "web", "static");
 
 export interface WebOptions {
   port?: number;

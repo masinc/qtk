@@ -1,15 +1,16 @@
 // qtk adr コマンド群
-import { join } from "node:path";
+
 import { existsSync, readdirSync } from "node:fs";
-import { parseMarkdown, updateFrontmatter, type ParsedRecord } from "../store/markdown";
-import { writeRecord, archiveRecord, recordPath } from "../store/repository";
-import { nextId, formatId, parseId } from "../models/id";
+import { join } from "node:path";
+import { formatId, nextId, parseId } from "../models/id";
 import { slugify, uniqueSlug } from "../models/slug";
-import { filterRecords } from "../query/filter";
+import type { Config } from "../models/types";
 import { outputJson } from "../output/json";
 import { renderTable } from "../output/table";
+import { filterRecords } from "../query/filter";
+import { type ParsedRecord, parseMarkdown, updateFrontmatter } from "../store/markdown";
+import { recordPath, writeRecord } from "../store/repository";
 import { nowIso } from "./context";
-import type { Config } from "../models/types";
 
 export interface AdrFile {
   record: ParsedRecord;
@@ -51,9 +52,7 @@ export async function newAdr(
   options: NewAdrOptions,
 ): Promise<{ id: number; path: string }> {
   const id = await nextId(storeDir, config);
-  const existing = new Set(
-    readdirSync(join(storeDir, "adrs")).filter((f) => f.endsWith(".md")),
-  );
+  const existing = new Set(readdirSync(join(storeDir, "adrs")).filter((f) => f.endsWith(".md")));
   const slug = uniqueSlug(slugify(options.title), existing);
 
   const frontmatter: Record<string, unknown> = {
@@ -159,8 +158,12 @@ export async function showAdr(
   console.log(`ステータス: ${fm.status}`);
   if (fm.tags) console.log(`タグ: ${(fm.tags as string[]).join(", ")}`);
   if (fm.deciders) console.log(`決定者: ${(fm.deciders as string[]).join(", ")}`);
-  if (fm.supersedes) console.log(`置き換え元: #${String(fm.supersedes as number).padStart(config.idDigits, "0")}`);
-  if (fm.superseded_by) console.log(`置き換え先: #${String(fm.superseded_by as number).padStart(config.idDigits, "0")}`);
+  if (fm.supersedes)
+    console.log(`置き換え元: #${String(fm.supersedes as number).padStart(config.idDigits, "0")}`);
+  if (fm.superseded_by)
+    console.log(
+      `置き換え先: #${String(fm.superseded_by as number).padStart(config.idDigits, "0")}`,
+    );
   console.log("");
   console.log(record.body);
 }
@@ -221,10 +224,7 @@ export async function editAdr(
   }
 }
 
-export async function adrTags(
-  storeDir: string,
-  json: boolean = false,
-): Promise<void> {
+export async function adrTags(storeDir: string, json: boolean = false): Promise<void> {
   const files = await listAdrFiles(storeDir);
   const counts = new Map<string, number>();
   for (const f of files) {
@@ -235,9 +235,7 @@ export async function adrTags(
   }
 
   if (json) {
-    outputJson(
-      [...counts.entries()].map(([tag, count]) => ({ tag, count })),
-    );
+    outputJson([...counts.entries()].map(([tag, count]) => ({ tag, count })));
     return;
   }
 

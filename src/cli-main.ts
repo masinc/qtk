@@ -1,43 +1,37 @@
 // qtk CLI エントリポイント (citty でサブコマンド振り分け)
 import { defineCommand, runMain } from "citty";
-import { initStore } from "./commands/init";
-import { resolveContext } from "./commands/context";
 import {
-  createIssue,
-  listIssues,
-  showIssue,
-  editIssue,
+  adrTags,
+  editAdr,
+  listAdrs,
+  newAdr,
+  parseAdrId,
+  showAdr,
+  validateAdrs,
+} from "./commands/adr";
+import { resolveContext } from "./commands/context";
+import { graph } from "./commands/graph";
+import { initStore } from "./commands/init";
+import {
   archiveIssue,
   claimIssue,
+  createIssue,
+  editIssue,
+  listIssues,
   parseIssueId,
+  showIssue,
 } from "./commands/issue";
 import {
-  newAdr,
-  listAdrs,
-  showAdr,
-  editAdr,
-  adrTags,
-  validateAdrs,
-  parseAdrId,
-} from "./commands/adr";
-import {
-  createSpec,
-  listSpecs,
-  showSpec,
-  updateSpec,
-  parseSpecId,
-} from "./commands/spec";
-import {
-  createPlan,
-  listPlans,
-  showPlan,
-  editPlan,
   archivePlan,
+  createPlan,
+  editPlan,
+  listPlans,
   parsePlanId,
+  showPlan,
 } from "./commands/plan";
-import { listTags } from "./commands/tags";
 import { search } from "./commands/search";
-import { graph } from "./commands/graph";
+import { createSpec, listSpecs, parseSpecId, showSpec, updateSpec } from "./commands/spec";
+import { listTags } from "./commands/tags";
 import { startWeb } from "./commands/web";
 
 const issueCmd = defineCommand({
@@ -297,7 +291,9 @@ const adrCmd = defineCommand({
           console.log("全ての ADR は有効です");
         } else {
           for (const issue of issues) {
-            console.log(`#${String(issue.id).padStart(ctx.config.idDigits, "0")} ${issue.field}: ${issue.message}`);
+            console.log(
+              `#${String(issue.id).padStart(ctx.config.idDigits, "0")} ${issue.field}: ${issue.message}`,
+            );
           }
           process.exitCode = 1;
         }
@@ -397,7 +393,9 @@ const planCmd = defineCommand({
         const { id } = await createPlan(ctx.storeDir, ctx.config, {
           title: args.title,
           description: args.description,
-          relatedIssues: args["related-issue"] ? [parsePlanId(args["related-issue"]) ?? 0] : undefined,
+          relatedIssues: args["related-issue"]
+            ? [parsePlanId(args["related-issue"]) ?? 0]
+            : undefined,
           relatedAdrs: args["related-adr"] ? [parsePlanId(args["related-adr"]) ?? 0] : undefined,
           generatedBy: args["generated-by"],
           status: args.status,
@@ -417,7 +415,9 @@ const planCmd = defineCommand({
         const ctx = await resolveContext(args.dir);
         await listPlans(ctx.storeDir, ctx.config, {
           status: args.status,
-          relatedIssue: args["related-issue"] ? parsePlanId(args["related-issue"]) ?? undefined : undefined,
+          relatedIssue: args["related-issue"]
+            ? (parsePlanId(args["related-issue"]) ?? undefined)
+            : undefined,
           json: args.json,
         });
       },
@@ -454,7 +454,9 @@ const planCmd = defineCommand({
         if (id === null) throw new Error(`不正な ID: ${args.id}`);
         await editPlan(ctx.storeDir, ctx.config, id, {
           status: args.status,
-          relatedIssues: args["related-issue"] ? [parsePlanId(args["related-issue"]) ?? 0] : undefined,
+          relatedIssues: args["related-issue"]
+            ? [parsePlanId(args["related-issue"]) ?? 0]
+            : undefined,
           relatedAdrs: args["related-adr"] ? [parsePlanId(args["related-adr"]) ?? 0] : undefined,
           supersedes: args.supersedes ? parsePlanId(args.supersedes) : undefined,
           title: args.title,
@@ -539,7 +541,7 @@ const graphCmd = defineCommand({
   async run({ args }) {
     const ctx = await resolveContext(args.dir);
     await graph(ctx.storeDir, ctx.config, {
-      planId: args.plan ? parsePlanId(args.plan) ?? undefined : undefined,
+      planId: args.plan ? (parsePlanId(args.plan) ?? undefined) : undefined,
       cycles: args.cycles,
       format: (args.format as "text" | "dot" | "json" | undefined) ?? "text",
     });

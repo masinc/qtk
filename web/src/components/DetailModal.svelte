@@ -1,58 +1,58 @@
 <script lang="ts">
-  import { issueStore } from "../stores/issues.svelte";
-  import type { Issue, IssueStatus } from "../lib/types";
+import type { Issue, IssueStatus } from "../lib/types";
+import { issueStore } from "../stores/issues.svelte";
 
-  interface Props {
-    issue: Issue | null;
-    open: boolean;
-    onclose: () => void;
-    onsuccess: (message: string) => void;
-    onerror: (message: string) => void;
+interface Props {
+  issue: Issue | null;
+  open: boolean;
+  onclose: () => void;
+  onsuccess: (message: string) => void;
+  onerror: (message: string) => void;
+}
+
+let { issue, open, onclose, onsuccess, onerror }: Props = $props();
+
+let status = $state<IssueStatus>("new");
+let description = $state("");
+let comment = $state("");
+let _submitting = $state(false);
+let dialog: HTMLDialogElement | undefined = $state();
+
+$effect(() => {
+  if (open && issue) {
+    status = issue.status;
+    description = issue.description ?? "";
+    comment = "";
+    dialog?.showModal();
+  } else {
+    dialog?.close();
   }
+});
 
-  let { issue, open, onclose, onsuccess, onerror }: Props = $props();
-
-  let status = $state<IssueStatus>("new");
-  let description = $state("");
-  let comment = $state("");
-  let submitting = $state(false);
-  let dialog: HTMLDialogElement | undefined = $state();
-
-  $effect(() => {
-    if (open && issue) {
-      status = issue.status;
-      description = issue.description ?? "";
-      comment = "";
-      dialog?.showModal();
-    } else {
-      dialog?.close();
-    }
-  });
-
-  async function submit() {
-    if (!issue) return;
-    submitting = true;
-    try {
-      await issueStore.edit(issue.id, {
-        status,
-        description,
-        comment: comment.trim() || undefined,
-      });
-      onclose();
-      onsuccess("保存しました");
-    } catch (err) {
-      onerror((err as Error).message);
-    } finally {
-      submitting = false;
-    }
+async function _submit() {
+  if (!issue) return;
+  _submitting = true;
+  try {
+    await issueStore.edit(issue.id, {
+      status,
+      description,
+      comment: comment.trim() || undefined,
+    });
+    onclose();
+    onsuccess("保存しました");
+  } catch (err) {
+    onerror((err as Error).message);
+  } finally {
+    _submitting = false;
   }
+}
 </script>
 
 <dialog bind:this={dialog} class="modal" onclose={onclose}>
   <div class="modal-box">
     {#if issue}
       <h3 class="text-lg font-bold">{issue.idLabel} {issue.title}</h3>
-      <form class="mt-4 flex flex-col gap-3" onsubmit={(e) => { e.preventDefault(); submit(); }}>
+      <form class="mt-4 flex flex-col gap-3" onsubmit={(e) => { e.preventDefault(); _submit(); }}>
         <fieldset class="fieldset">
           <legend class="fieldset-legend">ステータス</legend>
           <select class="select w-full" bind:value={status}>
@@ -76,8 +76,8 @@
         </fieldset>
         <div class="modal-action">
           <button type="button" class="btn" onclick={onclose}>閉じる</button>
-          <button type="submit" class="btn btn-primary" disabled={submitting}>
-            {submitting ? "保存中..." : "保存"}
+          <button type="submit" class="btn btn-primary" disabled={_submitting}>
+            {_submitting ? "保存中..." : "保存"}
           </button>
         </div>
       </form>

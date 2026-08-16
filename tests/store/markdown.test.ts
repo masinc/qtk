@@ -1,4 +1,4 @@
-import { test, expect } from "bun:test";
+import { expect, test } from "bun:test";
 import { parseMarkdown, serializeMarkdown, updateFrontmatter } from "../../src/store/markdown";
 
 const sample = `---

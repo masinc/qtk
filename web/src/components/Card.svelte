@@ -1,12 +1,12 @@
 <script lang="ts">
-  import type { Issue } from "../lib/types";
+import type { Issue } from "../lib/types";
 
-  interface Props {
-    issue: Issue;
-    onselect: (id: number) => void;
-  }
+interface Props {
+  issue: Issue;
+  onselect: (id: number) => void;
+}
 
-  let { issue, onselect }: Props = $props();
+let { issue, onselect }: Props = $props();
 </script>
 
 <button

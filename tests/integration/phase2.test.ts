@@ -1,15 +1,15 @@
 // Phase 2 統合テスト (claim/lease・グラフ・cycle 検出)
-import { test, expect, beforeAll, afterAll } from "bun:test";
+import { afterAll, beforeAll, expect, test } from "bun:test";
 import { mkdirSync, rmSync } from "node:fs";
-import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { initStore } from "../../src/commands/init";
-import { loadConfig } from "../../src/config/config";
-import { createIssue, claimIssue, findIssue, isStaleClaim } from "../../src/commands/issue";
-import { createPlan } from "../../src/commands/plan";
-import { buildGraph } from "../../src/query/graph";
-import { detectCycles } from "../../src/query/dependencies";
+import { join } from "node:path";
 import { graph } from "../../src/commands/graph";
+import { initStore } from "../../src/commands/init";
+import { claimIssue, createIssue, findIssue, isStaleClaim } from "../../src/commands/issue";
+import { createPlan } from "../../src/commands/plan";
+import { loadConfig } from "../../src/config/config";
+import { detectCycles } from "../../src/query/dependencies";
+import { buildGraph } from "../../src/query/graph";
 
 let storeDir: string;
 let config: Awaited<ReturnType<typeof loadConfig>>;
@@ -44,13 +44,14 @@ test("E2E: claim → 並列クレーム衝突 → stale 検出", async () => {
   // lease を過去に書き換えて stale 検出
   const found2 = await findIssue(storeDir, id);
   const past = new Date(Date.now() - 1000).toISOString();
-  const content = await Bun.file(join(storeDir, "issues", `0001-${found2!.slug}.md`)).text();
+  const content = await Bun.file(join(storeDir, "issues", `0001-${found2?.slug}.md`)).text();
   await Bun.write(
-    join(storeDir, "issues", `0001-${found2!.slug}.md`),
+    join(storeDir, "issues", `0001-${found2?.slug}.md`),
     content.replace(/lease_expires_at:.*/, `lease_expires_at: "${past}"`),
   );
   const found3 = await findIssue(storeDir, id);
-  expect(isStaleClaim(found3!.record)).toBe(true);
+  if (!found3) throw new Error("issue が見つからない");
+  expect(isStaleClaim(found3.record)).toBe(true);
 
   // stale なら再クレームできる
   await claimIssue(storeDir, config, id, { as: "agent-b" });
@@ -91,7 +92,7 @@ test("E2E: graph 表示 → cycle 検出", async () => {
   // cycle 検出
   const cycles = detectCycles(records);
   expect(cycles.length).toBe(1);
-  expect(cycles[0]!.sort()).toEqual([5, 6]);
+  expect(cycles[0]?.sort()).toEqual([5, 6]);
 
   // graph コマンド (text)
   await graph(storeDir, config, { format: "text" });

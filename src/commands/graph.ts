@@ -1,11 +1,12 @@
 // qtk graph コマンド (依存グラフ表示)
-import { listIssueFiles } from "./issue";
-import { listPlanFiles } from "./plan";
-import { buildGraph, filterGraphByPlan, type Graph } from "../query/graph";
-import { detectCycles } from "../query/dependencies";
-import { outputJson } from "../output/json";
+
 import { formatId } from "../models/id";
 import type { Config } from "../models/types";
+import { outputJson } from "../output/json";
+import { detectCycles } from "../query/dependencies";
+import { buildGraph, filterGraphByPlan, type Graph } from "../query/graph";
+import { listIssueFiles } from "./issue";
+import { listPlanFiles } from "./plan";
 
 export interface GraphOptions {
   planId?: number;
@@ -19,7 +20,7 @@ export async function graph(
   options: GraphOptions,
 ): Promise<void> {
   const files = await listIssueFiles(storeDir);
-  let records = files.map((f) => f.record);
+  const records = files.map((f) => f.record);
 
   let graph: Graph = buildGraph(records);
 
@@ -27,7 +28,10 @@ export async function graph(
   if (options.planId !== undefined) {
     const plans = await listPlanFiles(storeDir);
     const plan = plans.find((p) => p.record.frontmatter.id === options.planId);
-    if (!plan) throw new Error(`plan #${String(options.planId).padStart(config.idDigits, "0")} が見つかりません`);
+    if (!plan)
+      throw new Error(
+        `plan #${String(options.planId).padStart(config.idDigits, "0")} が見つかりません`,
+      );
     const related = (plan.record.frontmatter.related_issues as number[] | undefined) ?? [];
     graph = filterGraphByPlan(graph, related);
   }
@@ -55,8 +59,10 @@ export async function graph(
     } else {
       console.log("\n循環依存を検出:");
       for (const cycle of cycles) {
+        const first = cycle[0];
+        if (first === undefined) continue;
         console.log(
-          `  ${cycle.map((id) => formatId(id, config)).join(" → ")} → ${formatId(cycle[0]!, config)}`,
+          `  ${cycle.map((id) => formatId(id, config)).join(" → ")} → ${formatId(first, config)}`,
         );
       }
     }

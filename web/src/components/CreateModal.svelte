@@ -1,66 +1,66 @@
 <script lang="ts">
-  import { issueStore } from "../stores/issues.svelte";
+import { issueStore } from "../stores/issues.svelte";
 
-  interface Props {
-    open: boolean;
-    onclose: () => void;
-    onsuccess: (message: string) => void;
-    onerror: (message: string) => void;
+interface Props {
+  open: boolean;
+  onclose: () => void;
+  onsuccess: (message: string) => void;
+  onerror: (message: string) => void;
+}
+
+let { open, onclose, onsuccess, onerror }: Props = $props();
+
+let title = $state("");
+let description = $state("");
+let tags = $state("");
+let _submitting = $state(false);
+let dialog: HTMLDialogElement | undefined = $state();
+
+$effect(() => {
+  if (open) {
+    dialog?.showModal();
+  } else {
+    dialog?.close();
   }
+});
 
-  let { open, onclose, onsuccess, onerror }: Props = $props();
+function reset() {
+  title = "";
+  description = "";
+  tags = "";
+}
 
-  let title = $state("");
-  let description = $state("");
-  let tags = $state("");
-  let submitting = $state(false);
-  let dialog: HTMLDialogElement | undefined = $state();
-
-  $effect(() => {
-    if (open) {
-      dialog?.showModal();
-    } else {
-      dialog?.close();
-    }
-  });
-
-  function reset() {
-    title = "";
-    description = "";
-    tags = "";
+async function _submit() {
+  const trimmed = title.trim();
+  if (!trimmed) {
+    onerror("タイトルは必須です");
+    return;
   }
-
-  async function submit() {
-    const trimmed = title.trim();
-    if (!trimmed) {
-      onerror("タイトルは必須です");
-      return;
-    }
-    submitting = true;
-    try {
-      await issueStore.create({
-        title: trimmed,
-        description: description.trim() || undefined,
-        tags: tags
-          .split(",")
-          .map((t) => t.trim())
-          .filter(Boolean),
-      });
-      reset();
-      onclose();
-      onsuccess("チケットを作成しました");
-    } catch (err) {
-      onerror((err as Error).message);
-    } finally {
-      submitting = false;
-    }
+  _submitting = true;
+  try {
+    await issueStore.create({
+      title: trimmed,
+      description: description.trim() || undefined,
+      tags: tags
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean),
+    });
+    reset();
+    onclose();
+    onsuccess("チケットを作成しました");
+  } catch (err) {
+    onerror((err as Error).message);
+  } finally {
+    _submitting = false;
   }
+}
 </script>
 
 <dialog bind:this={dialog} class="modal" onclose={onclose}>
   <div class="modal-box">
     <h3 class="text-lg font-bold">新規チケット作成</h3>
-    <form class="mt-4 flex flex-col gap-3" onsubmit={(e) => { e.preventDefault(); submit(); }}>
+    <form class="mt-4 flex flex-col gap-3" onsubmit={(e) => { e.preventDefault(); _submit(); }}>
       <fieldset class="fieldset">
         <legend class="fieldset-legend">タイトル</legend>
         <input
@@ -89,8 +89,8 @@
       </fieldset>
       <div class="modal-action">
         <button type="button" class="btn" onclick={onclose}>キャンセル</button>
-        <button type="submit" class="btn btn-primary" disabled={submitting}>
-          {submitting ? "作成中..." : "作成"}
+        <button type="submit" class="btn btn-primary" disabled={_submitting}>
+          {_submitting ? "作成中..." : "作成"}
         </button>
       </div>
     </form>

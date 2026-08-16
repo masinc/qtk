@@ -1,4 +1,4 @@
-import { test, expect } from "bun:test";
+import { expect, test } from "bun:test";
 import { slugify, uniqueSlug } from "../../src/models/slug";
 
 test("slugify: 英語タイトルは kebab-case になる", () => {

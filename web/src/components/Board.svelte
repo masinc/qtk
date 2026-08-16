@@ -1,22 +1,22 @@
 <script lang="ts">
-  import Column from "./Column.svelte";
-  import { issueStore } from "../stores/issues.svelte";
-  import type { IssueStatus } from "../lib/types";
+import type { IssueStatus } from "../lib/types";
+import { issueStore } from "../stores/issues.svelte";
+import Column from "./Column.svelte";
 
-  interface Props {
-    onselect: (id: number) => void;
-    onerror: (message: string) => void;
+interface Props {
+  onselect: (id: number) => void;
+  onerror: (message: string) => void;
+}
+
+let { onselect, onerror }: Props = $props();
+
+async function _handleMove(id: number, status: IssueStatus) {
+  try {
+    await issueStore.updateStatus(id, status);
+  } catch (err) {
+    onerror((err as Error).message);
   }
-
-  let { onselect, onerror }: Props = $props();
-
-  async function handleMove(id: number, status: IssueStatus) {
-    try {
-      await issueStore.updateStatus(id, status);
-    } catch (err) {
-      onerror((err as Error).message);
-    }
-  }
+}
 </script>
 
 {#if issueStore.loading}
@@ -26,7 +26,7 @@
 {:else}
   <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
     {#each issueStore.columns as column (column.status)}
-      <Column column={column} onmove={handleMove} onselect={onselect} />
+      <Column column={column} onmove={_handleMove} onselect={onselect} />
     {/each}
   </div>
 {/if}

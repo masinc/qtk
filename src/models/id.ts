@@ -23,7 +23,7 @@ export async function writeCounter(storeDir: string, counter: Counter): Promise<
   await Bun.write(path, JSON.stringify(counter));
 }
 
-export async function nextId(storeDir: string, config: Config): Promise<number> {
+export async function nextId(storeDir: string, _config: Config): Promise<number> {
   const lockPath = join(storeDir, ".meta", "counter.lock");
   return withFileLock(lockPath, async () => {
     const counter = await readCounter(storeDir);
@@ -40,5 +40,6 @@ export function formatId(id: number, config: Config): string {
 export function parseId(input: string): number | null {
   const match = input.match(/^#?(\d+)$/);
   if (!match) return null;
-  return parseInt(match[1]!, 10);
+  const digits = match[1];
+  return digits === undefined ? null : parseInt(digits, 10);
 }

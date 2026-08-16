@@ -1,12 +1,12 @@
 // Phase 3 統合テスト (Web UI API)
-import { test, expect, beforeAll, afterAll } from "bun:test";
+import { afterAll, beforeAll, expect, test } from "bun:test";
 import { mkdirSync, rmSync } from "node:fs";
-import { join } from "node:path";
 import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { initStore } from "../../src/commands/init";
+import { createIssue, findIssue } from "../../src/commands/issue";
 import { loadConfig } from "../../src/config/config";
 import { createApp } from "../../src/web/hono-app";
-import { createIssue, findIssue } from "../../src/commands/issue";
 
 let storeDir: string;
 let config: Awaited<ReturnType<typeof loadConfig>>;

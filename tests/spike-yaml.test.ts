@@ -1,6 +1,7 @@
 // T02 スパイク検証: Bun.YAML の frontmatter 往復テスト
+
+import { expect, test } from "bun:test";
 import { YAML } from "bun";
-import { test, expect } from "bun:test";
 
 const sample = `---
 id: 1
@@ -18,7 +19,10 @@ created_at: "2026-08-13T23:33:00Z"
 ユーザー認証機能を実装する。`;
 
 test("Bun.YAML: parse -> update -> serialize -> re-parse で未知フィールドが保持される", () => {
-  const fm = YAML.parse(sample.split("\n---\n")[0]!) as Record<string, unknown>;
+  const parts = sample.split("\n---\n");
+  const head = parts[0];
+  if (head === undefined) throw new Error("sample の frontmatter が取得できない");
+  const fm = YAML.parse(head) as Record<string, unknown>;
   expect(fm.custom_priority).toBe("high");
 
   const updated = { ...fm, title: "認証機能を追加 (更新)" };

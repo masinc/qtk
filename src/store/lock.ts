@@ -26,8 +26,7 @@ export async function withFileLock<T>(
       retries: Math.max(1, Math.ceil((opts.timeout ?? 10000) / (opts.retryInterval ?? 100))),
       minTimeout: opts.retryInterval,
       maxTimeout: opts.retryInterval,
-      retryableError: (err: unknown) =>
-        (err as { code?: string })?.code === "ELOCKED",
+      retryableError: (err: unknown) => (err as { code?: string })?.code === "ELOCKED",
     } as never,
     stale: opts.stale,
     update: Math.max(1000, (opts.stale ?? 10000) / 2),

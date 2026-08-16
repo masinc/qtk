@@ -1,17 +1,18 @@
 // qtk issue コマンド群
-import { join } from "node:path";
+
 import { existsSync, readdirSync } from "node:fs";
-import { parseMarkdown, updateFrontmatter, type ParsedRecord } from "../store/markdown";
-import { writeRecord, listRecords, archiveRecord, recordPath } from "../store/repository";
-import { nextId, formatId, parseId } from "../models/id";
+import { join } from "node:path";
+import { formatId, nextId, parseId } from "../models/id";
 import { slugify, uniqueSlug } from "../models/slug";
-import { filterRecords } from "../query/filter";
-import { getReadyIssues, getBlockedIssues } from "../query/dependencies";
+import type { Config } from "../models/types";
 import { outputJson } from "../output/json";
 import { renderTable } from "../output/table";
+import { getBlockedIssues, getReadyIssues } from "../query/dependencies";
+import { filterRecords } from "../query/filter";
 import { withFileLock } from "../store/lock";
+import { type ParsedRecord, parseMarkdown, updateFrontmatter } from "../store/markdown";
+import { archiveRecord, recordPath, writeRecord } from "../store/repository";
 import { nowIso } from "./context";
-import type { Config } from "../models/types";
 
 export interface IssueFile {
   record: ParsedRecord;
@@ -53,9 +54,7 @@ export async function createIssue(
   options: CreateIssueOptions,
 ): Promise<{ id: number; path: string }> {
   const id = await nextId(storeDir, config);
-  const existing = new Set(
-    readdirSync(join(storeDir, "issues")).filter((f) => f.endsWith(".md")),
-  );
+  const existing = new Set(readdirSync(join(storeDir, "issues")).filter((f) => f.endsWith(".md")));
   const slug = uniqueSlug(slugify(options.title), existing);
 
   const frontmatter: Record<string, unknown> = {
@@ -155,7 +154,8 @@ export async function showIssue(
   options: ShowIssueOptions = {},
 ): Promise<void> {
   const found = await findIssue(storeDir, id);
-  if (!found) throw new Error(`issue #${String(id).padStart(config.idDigits, "0")} が見つかりません`);
+  if (!found)
+    throw new Error(`issue #${String(id).padStart(config.idDigits, "0")} が見つかりません`);
 
   const record = found.record;
   if (options.json) {
@@ -168,7 +168,10 @@ export async function showIssue(
   console.log(`ステータス: ${fm.status}`);
   if (fm.tags) console.log(`タグ: ${(fm.tags as string[]).join(", ")}`);
   if (fm.assignees) console.log(`担当: ${(fm.assignees as string[]).join(", ")}`);
-  if (fm.dependencies) console.log(`依存: ${(fm.dependencies as number[]).map((d) => `#${String(d).padStart(config.idDigits, "0")}`).join(", ")}`);
+  if (fm.dependencies)
+    console.log(
+      `依存: ${(fm.dependencies as number[]).map((d) => `#${String(d).padStart(config.idDigits, "0")}`).join(", ")}`,
+    );
   console.log("");
   console.log(record.body);
 }
@@ -198,12 +201,14 @@ export async function editIssue(
   options: EditIssueOptions,
 ): Promise<void> {
   const found = await findIssue(storeDir, id);
-  if (!found) throw new Error(`issue #${String(id).padStart(config.idDigits, "0")} が見つかりません`);
+  if (!found)
+    throw new Error(`issue #${String(id).padStart(config.idDigits, "0")} が見つかりません`);
 
   const updates: Record<string, unknown> = { updated_at: nowIso() };
 
   if (options.description !== undefined) updates.description = options.description;
-  if (options.acceptanceCriteria !== undefined) updates.acceptance_criteria = options.acceptanceCriteria;
+  if (options.acceptanceCriteria !== undefined)
+    updates.acceptance_criteria = options.acceptanceCriteria;
   if (options.plan !== undefined) updates.plan = options.plan;
   if (options.notes !== undefined) updates.notes = options.notes;
   if (options.finalSummary !== undefined) updates.final_summary = options.finalSummary;
@@ -239,13 +244,10 @@ export async function editIssue(
   await writeRecord(storeDir, "issue", id, found.slug, updated);
 }
 
-export async function archiveIssue(
-  storeDir: string,
-  config: Config,
-  id: number,
-): Promise<void> {
+export async function archiveIssue(storeDir: string, config: Config, id: number): Promise<void> {
   const found = await findIssue(storeDir, id);
-  if (!found) throw new Error(`issue #${String(id).padStart(config.idDigits, "0")} が見つかりません`);
+  if (!found)
+    throw new Error(`issue #${String(id).padStart(config.idDigits, "0")} が見つかりません`);
   archiveRecord(storeDir, "issue", id, found.slug);
 }
 
@@ -262,7 +264,8 @@ export async function claimIssue(
   const lockPath = join(storeDir, ".meta", "claim.lock");
   await withFileLock(lockPath, async () => {
     const found = await findIssue(storeDir, id);
-    if (!found) throw new Error(`issue #${String(id).padStart(config.idDigits, "0")} が見つかりません`);
+    if (!found)
+      throw new Error(`issue #${String(id).padStart(config.idDigits, "0")} が見つかりません`);
 
     const fm = found.record.frontmatter;
     const claimedBy = fm.claimed_by as string | null | undefined;

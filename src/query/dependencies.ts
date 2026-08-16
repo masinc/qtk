@@ -73,22 +73,37 @@ export function detectCycles(records: ParsedRecord[]): number[][] {
       if (!byId.has(w)) continue;
       if (!index.has(w)) {
         strongConnect(w);
-        lowlink.set(v, Math.min(lowlink.get(v)!, lowlink.get(w)!));
+        const lowV = lowlink.get(v);
+        const lowW = lowlink.get(w);
+        if (lowV !== undefined && lowW !== undefined) {
+          lowlink.set(v, Math.min(lowV, lowW));
+        }
       } else if (onStack.has(w)) {
-        lowlink.set(v, Math.min(lowlink.get(v)!, index.get(w)!));
+        const lowV = lowlink.get(v);
+        const idxW = index.get(w);
+        if (lowV !== undefined && idxW !== undefined) {
+          lowlink.set(v, Math.min(lowV, idxW));
+        }
       }
     }
 
     if (lowlink.get(v) === index.get(v)) {
       const scc: number[] = [];
-      let w: number;
+      let w: number | undefined;
       do {
-        w = stack.pop()!;
+        w = stack.pop();
+        if (w === undefined) break;
         onStack.delete(w);
         scc.push(w);
       } while (w !== v);
       // 自己ループ (v → v) も cycle として扱う
-      if (scc.length > 1 || (scc.length === 1 && getDependencies(byId.get(scc[0]!) ?? { frontmatter: {}, body: "" }).includes(scc[0]!))) {
+      const first = scc[0];
+      if (
+        scc.length > 1 ||
+        (scc.length === 1 &&
+          first !== undefined &&
+          getDependencies(byId.get(first) ?? { frontmatter: {}, body: "" }).includes(first))
+      ) {
         sccs.push(scc);
       }
     }

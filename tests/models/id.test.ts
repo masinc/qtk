@@ -1,8 +1,8 @@
-import { test, expect } from "bun:test";
+import { expect, test } from "bun:test";
 import { mkdirSync, rmSync } from "node:fs";
-import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { nextId, formatId, parseId, readCounter } from "../../src/models/id";
+import { join } from "node:path";
+import { formatId, nextId, parseId, readCounter } from "../../src/models/id";
 import type { Config } from "../../src/models/types";
 
 const makeStore = (suffix: string) => {
@@ -35,15 +35,19 @@ test("nextId: 連番で採番される", async () => {
   }
 });
 
-test("nextId: 並列呼び出しで ID が重複しない", async () => {
-  const dir = makeStore("parallel");
-  try {
-    const ids = await Promise.all(Array.from({ length: 20 }, () => nextId(dir, config)));
-    expect(new Set(ids).size).toBe(20);
-  } finally {
-    rmSync(dir, { recursive: true, force: true });
-  }
-}, { timeout: 30000 });
+test(
+  "nextId: 並列呼び出しで ID が重複しない",
+  async () => {
+    const dir = makeStore("parallel");
+    try {
+      const ids = await Promise.all(Array.from({ length: 20 }, () => nextId(dir, config)));
+      expect(new Set(ids).size).toBe(20);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  },
+  { timeout: 30000 },
+);
 
 test("formatId: 桁数設定でゼロ埋めされる", () => {
   expect(formatId(1, config)).toBe("#0001");

@@ -1,5 +1,5 @@
-import { test, expect } from "bun:test";
-import { getReadyIssues, getBlockedIssues, getDependencies } from "../../src/query/dependencies";
+import { expect, test } from "bun:test";
+import { getBlockedIssues, getDependencies, getReadyIssues } from "../../src/query/dependencies";
 import { parseMarkdown } from "../../src/store/markdown";
 
 const makeRecord = (id: number, deps: number[] = [], status = "new") =>

@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/svelte";
+import { describe, expect, it, vi } from "vitest";
 import CreateModal from "../../src/components/CreateModal.svelte";
 import { issueStore } from "../../src/stores/issues.svelte";
 

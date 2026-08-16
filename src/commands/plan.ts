@@ -1,15 +1,15 @@
 // qtk plan コマンド群
-import { join } from "node:path";
+
 import { existsSync, readdirSync } from "node:fs";
-import { parseMarkdown, updateFrontmatter, type ParsedRecord } from "../store/markdown";
-import { writeRecord, archiveRecord, recordPath } from "../store/repository";
-import { nextId, formatId, parseId } from "../models/id";
+import { join } from "node:path";
+import { formatId, nextId, parseId } from "../models/id";
 import { slugify, uniqueSlug } from "../models/slug";
-import { filterRecords } from "../query/filter";
+import type { Config } from "../models/types";
 import { outputJson } from "../output/json";
 import { renderTable } from "../output/table";
+import { type ParsedRecord, parseMarkdown, updateFrontmatter } from "../store/markdown";
+import { archiveRecord, recordPath, writeRecord } from "../store/repository";
 import { nowIso } from "./context";
-import type { Config } from "../models/types";
 
 export interface PlanFile {
   record: ParsedRecord;
@@ -168,9 +168,10 @@ export async function listPlans(
     records = records.filter((r) => r.frontmatter.plan_status === options.status);
   }
   if (options.relatedIssue) {
+    const relatedIssue = options.relatedIssue;
     records = records.filter((r) => {
       const related = r.frontmatter.related_issues as number[] | undefined;
-      return Array.isArray(related) && related.includes(options.relatedIssue!);
+      return Array.isArray(related) && related.includes(relatedIssue);
     });
   }
 
@@ -199,7 +200,8 @@ export async function showPlan(
   options: ShowPlanOptions = {},
 ): Promise<void> {
   const found = await findPlan(storeDir, id);
-  if (!found) throw new Error(`plan #${String(id).padStart(config.idDigits, "0")} が見つかりません`);
+  if (!found)
+    throw new Error(`plan #${String(id).padStart(config.idDigits, "0")} が見つかりません`);
 
   const record = found.record;
   if (options.json) {
@@ -210,8 +212,14 @@ export async function showPlan(
   const fm = record.frontmatter;
   console.log(`#${String(id).padStart(config.idDigits, "0")} ${fm.title}`);
   console.log(`ステータス: ${fm.plan_status}`);
-  if (fm.related_issues) console.log(`関連 issue: ${(fm.related_issues as number[]).map((d) => `#${String(d).padStart(config.idDigits, "0")}`).join(", ")}`);
-  if (fm.related_adrs) console.log(`関連 ADR: ${(fm.related_adrs as number[]).map((d) => `#${String(d).padStart(config.idDigits, "0")}`).join(", ")}`);
+  if (fm.related_issues)
+    console.log(
+      `関連 issue: ${(fm.related_issues as number[]).map((d) => `#${String(d).padStart(config.idDigits, "0")}`).join(", ")}`,
+    );
+  if (fm.related_adrs)
+    console.log(
+      `関連 ADR: ${(fm.related_adrs as number[]).map((d) => `#${String(d).padStart(config.idDigits, "0")}`).join(", ")}`,
+    );
   if (fm.generated_by) console.log(`生成者: ${fm.generated_by}`);
   console.log("");
   console.log(record.body);
@@ -233,7 +241,8 @@ export async function editPlan(
   options: EditPlanOptions,
 ): Promise<void> {
   const found = await findPlan(storeDir, id);
-  if (!found) throw new Error(`plan #${String(id).padStart(config.idDigits, "0")} が見つかりません`);
+  if (!found)
+    throw new Error(`plan #${String(id).padStart(config.idDigits, "0")} が見つかりません`);
 
   const updates: Record<string, unknown> = { updated_at: nowIso() };
 
@@ -261,13 +270,10 @@ export async function editPlan(
   }
 }
 
-export async function archivePlan(
-  storeDir: string,
-  config: Config,
-  id: number,
-): Promise<void> {
+export async function archivePlan(storeDir: string, config: Config, id: number): Promise<void> {
   const found = await findPlan(storeDir, id);
-  if (!found) throw new Error(`plan #${String(id).padStart(config.idDigits, "0")} が見つかりません`);
+  if (!found)
+    throw new Error(`plan #${String(id).padStart(config.idDigits, "0")} が見つかりません`);
   archiveRecord(storeDir, "plan", id, found.slug);
 }
 

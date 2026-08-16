@@ -1,10 +1,16 @@
-import { test, expect } from "bun:test";
-import { mkdirSync, rmSync, existsSync } from "node:fs";
-import { join } from "node:path";
+import { expect, test } from "bun:test";
+import { existsSync, mkdirSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { createIssue, findIssue, listIssueFiles, editIssue, archiveIssue } from "../../src/commands/issue";
-import { ensureStoreDirs } from "../../src/store/repository";
+import { join } from "node:path";
+import {
+  archiveIssue,
+  createIssue,
+  editIssue,
+  findIssue,
+  listIssueFiles,
+} from "../../src/commands/issue";
 import { DEFAULT_CONFIG } from "../../src/config/config";
+import { ensureStoreDirs } from "../../src/store/repository";
 
 const makeStore = (suffix: string) => {
   const dir = join(tmpdir(), `qtk-issue-${Date.now()}-${suffix}`);
@@ -93,7 +99,7 @@ custom_field: "keep-me"
 ---
 
 本文`;
-    await Bun.write(join(dir, "issues", `0001-${found1!.slug}.md`), customContent);
+    await Bun.write(join(dir, "issues", `0001-${found1?.slug}.md`), customContent);
 
     await editIssue(dir, DEFAULT_CONFIG, id, { status: "done" });
     const found2 = await findIssue(dir, id);

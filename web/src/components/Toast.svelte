@@ -1,10 +1,10 @@
 <script lang="ts">
-  interface Props {
-    message: string;
-    isError?: boolean;
-  }
+interface Props {
+  message: string;
+  isError?: boolean;
+}
 
-  let { message, isError = false }: Props = $props();
+let { message, isError = false }: Props = $props();
 </script>
 
 {#if message}

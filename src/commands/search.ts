@@ -1,14 +1,15 @@
 // qtk search コマンド (横断検索)
-import { listIssueFiles } from "./issue";
-import { listAdrFiles } from "./adr";
-import { listSpecFiles } from "./spec";
-import { listPlanFiles } from "./plan";
-import { filterRecords } from "../query/filter";
-import { outputJson } from "../output/json";
-import { renderTable } from "../output/table";
+
 import { formatId } from "../models/id";
 import type { Config } from "../models/types";
+import { outputJson } from "../output/json";
+import { renderTable } from "../output/table";
+import { filterRecords } from "../query/filter";
 import type { ParsedRecord } from "../store/markdown";
+import { listAdrFiles } from "./adr";
+import { listIssueFiles } from "./issue";
+import { listPlanFiles } from "./plan";
+import { listSpecFiles } from "./spec";
 
 export interface SearchOptions {
   keyword: string;
@@ -29,15 +30,12 @@ export interface SearchResult {
 
 export async function searchAll(
   storeDir: string,
-  config: Config,
+  _config: Config,
   options: SearchOptions,
 ): Promise<SearchResult[]> {
   const results: SearchResult[] = [];
 
-  const collect = async (
-    type: string,
-    files: { record: ParsedRecord }[],
-  ) => {
+  const collect = async (type: string, files: { record: ParsedRecord }[]) => {
     let records = files.map((f) => f.record);
     records = filterRecords(records, {
       status: options.status,
@@ -84,11 +82,6 @@ export async function search(
     return;
   }
 
-  const rows = results.map((r) => [
-    formatId(r.id, config),
-    r.type,
-    r.title,
-    r.status,
-  ]);
+  const rows = results.map((r) => [formatId(r.id, config), r.type, r.title, r.status]);
   console.log(renderTable(["ID", "種別", "タイトル", "ステータス"], rows));
 }

@@ -1,10 +1,10 @@
-import { test, expect } from "bun:test";
+import { expect, test } from "bun:test";
 import { mkdirSync, rmSync } from "node:fs";
-import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { newAdr, findAdr, editAdr, adrTags, validateAdrs } from "../../src/commands/adr";
-import { ensureStoreDirs } from "../../src/store/repository";
+import { join } from "node:path";
+import { editAdr, findAdr, newAdr, validateAdrs } from "../../src/commands/adr";
 import { DEFAULT_CONFIG } from "../../src/config/config";
+import { ensureStoreDirs } from "../../src/store/repository";
 
 const makeStore = (suffix: string) => {
   const dir = join(tmpdir(), `qtk-adr-${Date.now()}-${suffix}`);
@@ -103,7 +103,7 @@ tags:
 supersedes: 999
 ---
 本文`;
-    await Bun.write(join(dir, "adrs", `0001-${found!.slug}.md`), broken);
+    await Bun.write(join(dir, "adrs", `0001-${found?.slug}.md`), broken);
 
     const issues = await validateAdrs(dir);
     expect(issues.length).toBeGreaterThan(0);

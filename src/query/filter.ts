@@ -9,10 +9,7 @@ export interface FilterOptions {
   limit?: number;
 }
 
-export function filterRecords(
-  records: ParsedRecord[],
-  options: FilterOptions,
-): ParsedRecord[] {
+export function filterRecords(records: ParsedRecord[], options: FilterOptions): ParsedRecord[] {
   let result = records;
 
   if (options.status) {

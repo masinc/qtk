@@ -11,10 +11,19 @@
   },
   "scripts": {
     "dev": "bun run cli.ts",
-    "test": "bun test ./tests",
-    "typecheck": "tsc --noEmit",
-    "build": "bun run --filter @masinc/qtk-web build && bun build cli.ts --outdir dist --target bun && bun run scripts/copy-static.ts",
-    "prepublishOnly": "bun test && bun run typecheck && bun run build"
+    "dev:cli": "bun run cli.ts",
+    "dev:web": "bun run scripts/dev-web.ts",
+    "test": "bun test ./tests && bun run test:web",
+    "test:web": "bun run --filter @masinc/qtk-web test",
+    "typecheck": "tsc --noEmit && bun run typecheck:web",
+    "typecheck:web": "bun run --filter @masinc/qtk-web svelte-check",
+    "build": "bun run build:web && bun run build:cli",
+    "build:web": "bun run --filter @masinc/qtk-web build && bun run scripts/copy-static.ts",
+    "build:cli": "bun build cli.ts --outdir dist --target bun",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "prepublishOnly": "bun run test && bun run typecheck && bun run build"
   },
   "keywords": [
     "issue",
@@ -48,6 +57,7 @@
     "zod": "^4.4.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.0.0",
     "@types/bun": "latest",
     "@types/proper-lockfile": "^4.1.4",
     "bun-types": "latest",

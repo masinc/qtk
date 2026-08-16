@@ -1,5 +1,11 @@
 import { api } from "../lib/api";
-import { COLUMN_LABELS, COLUMN_STATUSES, type Column, type Issue, type IssueStatus } from "../lib/types";
+import {
+  COLUMN_LABELS,
+  COLUMN_STATUSES,
+  type Column,
+  type Issue,
+  type IssueStatus,
+} from "../lib/types";
 
 class IssueStore {
   issues = $state<Issue[]>([]);
@@ -53,10 +59,7 @@ class IssueStore {
   }
 }
 
-async function errorMessage(res: {
-  json(): Promise<unknown>;
-  status: number;
-}): Promise<string> {
+async function errorMessage(res: { json(): Promise<unknown>; status: number }): Promise<string> {
   const body = (await res.json().catch(() => ({}))) as { error?: string };
   return body.error ?? `HTTP ${res.status}`;
 }

@@ -25,9 +25,4 @@ export const COLUMN_LABELS: Record<IssueStatus, string> = {
   done: "Done",
 };
 
-export const COLUMN_STATUSES: IssueStatus[] = [
-  "new",
-  "in-progress",
-  "paused",
-  "done",
-];
+export const COLUMN_STATUSES: IssueStatus[] = ["new", "in-progress", "paused", "done"];

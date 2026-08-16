@@ -1,6 +1,6 @@
-import { test, expect } from "bun:test";
-import { buildGraph, filterGraphByPlan } from "../../src/query/graph";
+import { expect, test } from "bun:test";
 import { detectCycles } from "../../src/query/dependencies";
+import { buildGraph, filterGraphByPlan } from "../../src/query/graph";
 import { parseMarkdown } from "../../src/store/markdown";
 
 const makeRecord = (id: number, deps: number[] = []) =>
@@ -44,16 +44,11 @@ test("detectCycles: 単一 cycle を検出する", () => {
   const records = [makeRecord(1, [2]), makeRecord(2, [1])];
   const cycles = detectCycles(records);
   expect(cycles.length).toBe(1);
-  expect(cycles[0]!.sort()).toEqual([1, 2]);
+  expect(cycles[0]?.sort()).toEqual([1, 2]);
 });
 
 test("detectCycles: 複数 cycle を検出する", () => {
-  const records = [
-    makeRecord(1, [2]),
-    makeRecord(2, [1]),
-    makeRecord(3, [4]),
-    makeRecord(4, [3]),
-  ];
+  const records = [makeRecord(1, [2]), makeRecord(2, [1]), makeRecord(3, [4]), makeRecord(4, [3])];
   const cycles = detectCycles(records);
   expect(cycles.length).toBe(2);
 });

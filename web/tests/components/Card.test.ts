@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/svelte";
+import { describe, expect, it, vi } from "vitest";
 import Card from "../../src/components/Card.svelte";
 import type { Issue } from "../../src/lib/types";
 

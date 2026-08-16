@@ -1,6 +1,7 @@
 // T02 スパイク検証: cli-table3 の日本語テーブルテスト
+
+import { expect, test } from "bun:test";
 import Table from "cli-table3";
-import { test, expect } from "bun:test";
 
 test("cli-table3: 日本語を含むテーブルが表示できる", () => {
   const table = new Table({
